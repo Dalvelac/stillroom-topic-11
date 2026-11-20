@@ -6,37 +6,37 @@
     "tool": "Burp browser journey"
   },
   {
-    "time": 8.533,
+    "time": 12.667,
     "title": "Burp HTTP history",
     "caption": "The raw response contains two encoded matches, in the heading and in the search field.",
     "tool": "Burp Suite Community"
   },
   {
-    "time": 16.067,
+    "time": 20.933,
     "title": "Checkout and receipt",
     "caption": "Alex places a €48 simulated order and opens the receipt download.",
     "tool": "ZAP browser journey"
   },
   {
-    "time": 24.6,
+    "time": 29.467,
     "title": "Triage a passive alert",
     "caption": "The potential XSS alert on q is informational and carries low confidence.",
     "tool": "ZAP in Safe mode"
   },
   {
-    "time": 30.133,
+    "time": 35.0,
     "title": "Staff updates the order",
     "caption": "Staff opens SR-2105 and advances the order from Placed to Processing.",
     "tool": "mitmproxy browser journey"
   },
   {
-    "time": 36.667,
+    "time": 41.533,
     "title": "Read the saved flows",
     "caption": "The saved flow shows a 303 from the status change, followed by a 200 on order detail.",
     "tool": "mitmdump"
   },
   {
-    "time": 43.2,
+    "time": 51.2,
     "title": "Verify the fulfilment rules",
     "caption": "Separate tests check staff permission and the sequence of allowed transitions.",
     "tool": "Node regression tests"
