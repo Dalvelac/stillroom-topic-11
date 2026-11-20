@@ -1,0 +1,277 @@
+{
+  "provenance": "Browser response events and assertions from the journey through the named proxy. actorPhase labels the person operating the browser when the event was received, including sign-in and sign-out redirects. Login bodies, headers and cookies are omitted.",
+  "tool": "burp",
+  "proxyPort": 8080,
+  "origin": "http://127.0.0.1:18770",
+  "started": "2026-11-19T18:30:15.385Z",
+  "finished": "2026-11-19T18:30:30.934Z",
+  "browser": "156.0.8078.4",
+  "reflection": {
+    "status": 200,
+    "rawHTML": [
+      "<h2 id=\"collection-heading\">Results for <span class=\"search-term\">Morning &lt;sample&gt; &amp; &quot;notes&quot;</span></h2>",
+      "<input id=\"search\" name=\"q\" type=\"search\" maxlength=\"100\" value=\"Morning &lt;sample&gt; &amp; &quot;notes&quot;\" placeholder=\"Coffee, carafe, filters\u2026\">"
+    ],
+    "dom": {
+      "text": "Morning <sample> & \"notes\"",
+      "nodeTypes": [
+        3
+      ],
+      "childElements": 0
+    },
+    "input": "Morning <sample> & \"notes\""
+  },
+  "order": "SR-2105",
+  "receipt": "stillroom-receipt-6105.html",
+  "finalStatus": "Processing",
+  "timeline": [
+    "Placed",
+    "Processing"
+  ],
+  "secondCustomerHistory": [
+    "SR-2104",
+    "SR-2102"
+  ],
+  "documents": [
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "GET",
+      "target": "/?page=2",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "GET",
+      "target": "/?q=&category=coffee&sort=price-asc",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "GET",
+      "target": "/?q=Roaster%27s&category=coffee&sort=price-asc",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "GET",
+      "target": "/?q=Morning+%3Csample%3E+%26+%22notes%22&category=coffee&sort=price-asc",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/products/roasters-reserve",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "POST",
+      "target": "/cart/items",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/cart",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "POST",
+      "target": "/cart/items/4/update",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/cart",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/checkout",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "POST",
+      "target": "/checkout",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/receipts/6105",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "GET",
+      "target": "/staff/orders",
+      "status": 200,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "POST",
+      "target": "/staff/orders/2105/status",
+      "status": 303,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "staff"
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/orders",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "alex"
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200,
+      "actorPhase": "Guest"
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303,
+      "actorPhase": "jamie"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "jamie"
+    },
+    {
+      "method": "GET",
+      "target": "/orders",
+      "status": 200,
+      "actorPhase": "jamie"
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303,
+      "actorPhase": "jamie"
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200,
+      "actorPhase": "jamie"
+    }
+  ]
+}

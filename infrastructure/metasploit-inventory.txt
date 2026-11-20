@@ -1,0 +1,58 @@
+[*] Spooling to file inventory.log...
+msf > db_import baseline.xml
+[*] Importing 'Nmap XML' data
+[*] Import: Parsing with 'Nokogiri v1.19.7'
+[*] Importing host 127.0.0.1
+[*] Successfully imported /tmp/stillroom-infra.hoiHAQ/baseline.xml
+msf > hosts
+
+Hosts
+=====
+
+address    mac  name            os_name  os_flavor  os_sp  purpose  info  comments
+-------    ---  ----            -------  ---------  -----  -------  ----  --------
+127.0.0.1       stillroom.test  Unknown                    device
+
+msf > services
+Services
+========
+
+host       port  proto  name          state  info             resource  parents
+----       ----  -----  ----          -----  ----             --------  -------
+127.0.0.1  21    tcp    ftp           open   pyftpdlib 2.2.0  {}
+127.0.0.1  8770  tcp    apple-iphoto  open                    {}
+
+msf > notes -a -t lab.exposure -n "Baseline XML reports FTP open on TCP 21." 127.0.0.1
+[*] Time: 2026-11-19 19:08:26 UTC Note: host=127.0.0.1 type=lab.exposure data=Baseline XML reports FTP open on TCP 21.
+msf > notes -t lab.exposure
+
+Notes
+=====
+
+ Time           Host       Service  Port  Protocol  Type          Data
+ ----           ----       -------  ----  --------  ----          ----
+ 2026-11-19 19  127.0.0.1                           lab.exposure  "Baseline XML reports FTP open on TCP 21."
+ :08:26 UTC
+
+msf > [H[2Jmsf > workspace
+  default
+* topic11_ftp_baseline
+msf > hosts -c address,name
+
+Hosts
+=====
+
+address    name
+-------    ----
+127.0.0.1  stillroom.test
+
+msf > services -c port,name,state,info
+Services
+========
+
+host       port  name          state  info             resource  parents
+----       ----  ----          -----  ----             --------  -------
+127.0.0.1  21    ftp           open   pyftpdlib 2.2.0  {}
+127.0.0.1  8770  apple-iphoto  open                    {}
+
+msf > spool off

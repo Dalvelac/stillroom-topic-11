@@ -1,0 +1,206 @@
+{
+  "provenance": "Burp Proxy HTTP history selection exported with Save items immediately after the browser journey. Only local document rows retained. Headers and bodies omitted.",
+  "version": "2026.4.3",
+  "documents": [
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/?page=2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/?q=&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/?q=Roaster%27s&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/?q=Morning+%3Csample%3E+%26+%22notes%22&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/products/roasters-reserve",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/cart/items",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/cart",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/cart/items/4/update",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/cart",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/checkout",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/checkout",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/receipts/6105",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/staff/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/staff/orders/2105/status",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/orders",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "target": "/orders",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+5842:9:websocket;0:~8:response;3598:6:reason;2:OK,11:status_code;3:200#13:timestamp_end;17:1795113061.228201^15:timestamp_start;18:1795113061.2263439^8:trailers;0:~7:content;2884:<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalogue | Stillroom</title>
+  <link rel="icon" type="image/webp" href="/assets/kite.webp">
+  <link rel="stylesheet" href="/assets/shop.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="/"><span class="mark" aria-hidden="true"></span>Stillroom</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/" aria-current="page">Catalogue</a>
+        <a class="nav-button" href="/login">Sign in</a>
+        
+      </nav>
+    </div>
+  </header>
+  <main class="shell main" id="main" tabindex="-1">
+    <h1 class="page-title">Catalogue</h1>
+    <section class="collection" id="collection" aria-labelledby="collection-heading">
+      <div class="section-heading">
+        <h2 id="collection-heading">Results for <span class="search-term">Roaster&#39;s</span></h2>
+        <p>1 product</p>
+      </div>
+      <form class="filters" action="/#collection" method="get">
+        <div class="filter-search">
+          <label for="search">Search products</label>
+          <input id="search" name="q" type="search" maxlength="100" value="Roaster&#39;s" placeholder="Coffee, carafe, filters…">
+        </div>
+        <div><label for="category">Category</label><select id="category" name="category">
+          <option value="">All categories</option>
+          <option value="coffee" selected>Coffee</option><option value="brewing">Brewing gear</option><option value="serveware">Serveware</option>
+        </select></div>
+        <div><label for="sort">Sort by</label><select id="sort" name="sort">
+          <option value="featured">Featured</option><option value="price-asc" selected>Price, low to high</option><option value="price-desc">Price, high to low</option><option value="name">Name, A to Z</option>
+        </select></div>
+        <button class="button">Apply</button>
+      </form>
+      
+      <div class="product-grid"><article class="product">
+    <a class="product-image" href="/products/roasters-reserve" tabindex="-1" aria-hidden="true"><img class="" src="/assets/reserve.webp" alt="Navy coffee pouch with an orange label" width="512" height="512"></a>
+    <div class="product-copy">
+      <p class="category">Coffee</p>
+      <h3><a href="/products/roasters-reserve">Roaster&#39;s Reserve</a></h3>
+      <p class="description">A 250 g small-batch coffee with apricot and brown sugar notes.</p>
+      <div class="product-bottom"><strong>€24.00</strong>
+        
+      </div>
+    </div>
+  </article></div>
+      
+    </section></main>
+  <footer class="site-footer"><div class="shell"><span class="footer-brand">Stillroom</span><span>Coffee &amp; brewing</span></div></footer>
+</body>
+</html>,7:headers;528:44:12:Content-Type,24:text/html; charset=utf-8,]163:23:Content-Security-Policy,131:default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; frame-src 'none',]36:22:X-Content-Type-Options,7:nosniff,]26:15:X-Frame-Options,4:DENY,]34:15:Referrer-Policy,11:same-origin,]65:13:Cache-Control,44:private, no-store, no-cache, must-revalidate,]25:14:Content-Length,4:2884,]40:4:Date,29:Thu, 19 Nov 2026 18:31:01 GMT,]28:10:Connection,10:keep-alive,]26:10:Keep-Alive,9:timeout=5,]]12:http_version;8:HTTP/1.1,}7:request;1088:4:path;46:/?q=Roaster%27s&category=coffee&sort=price-asc,9:authority;0:,6:scheme;4:http,6:method;3:GET,4:port;5:18770#4:host;9:127.0.0.1;13:timestamp_end;17:1795113061.220642^15:timestamp_start;17:1795113061.219365^8:trailers;0:~7:content;0:,7:headers;804:26:4:Host,15:127.0.0.1:18770,]34:16:Proxy-Connection,10:keep-alive,]55:9:sec-ch-ua,39:"Not:A-Brand";v="8", "Chromium";v="156",]25:16:sec-ch-ua-mobile,2:?0,]32:18:sec-ch-ua-platform,7:"Linux",]33:25:Upgrade-Insecure-Requests,1:1,]120:10:User-Agent,101:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36,]27:15:Accept-Language,5:en-GB,]159:6:Accept,145:text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,]33:14:Sec-Fetch-Site,11:same-origin,]29:14:Sec-Fetch-Mode,8:navigate,]23:14:Sec-Fetch-User,2:?1,]29:14:Sec-Fetch-Dest,8:document,]71:7:Referer,57:http://127.0.0.1:18770/?q=&category=coffee&sort=price-asc,]46:15:Accept-Encoding,23:gzip, deflate, br, zstd,]]12:http_version;8:HTTP/1.1,}6:backup;0:~17:timestamp_created;18:1795113061.2196867^7:comment;0:;8:metadata;0:}6:marked;0:;9:is_replay;0:~11:intercepted;5:false!11:server_conn;451:3:via;0:~19:timestamp_tcp_setup;18:1795113060.6021538^7:address;20:9:127.0.0.1;5:18770#]19:timestamp_tls_setup;0:~13:timestamp_end;0:~15:timestamp_start;18:1795113060.5973687^3:sni;0:~11:tls_version;0:~11:cipher_list;0:]6:cipher;0:~11:alpn_offers;0:]4:alpn;0:~16:certificate_list;0:]3:tls;5:false!5:error;0:~18:transport_protocol;3:tcp;2:id;36:a54ce9bc-9d67-41c1-884c-9e30c160dd20;8:sockname;20:9:127.0.0.1;5:56478#]8:peername;20:9:127.0.0.1;5:18770#]}11:client_conn;400:10:proxy_mode;7:regular;8:mitmcert;0:~19:timestamp_tls_setup;0:~13:timestamp_end;0:~15:timestamp_start;18:1795113060.5798314^3:sni;0:~11:tls_version;0:~11:cipher_list;0:]6:cipher;0:~11:alpn_offers;0:]4:alpn;0:~16:certificate_list;0:]3:tls;5:false!5:error;0:~18:transport_protocol;3:tcp;2:id;36:1f62c2fe-b650-4c2b-9795-187231671588;8:sockname;19:9:127.0.0.1;4:8093#]8:peername;20:9:127.0.0.1;5:47258#]}5:error;0:~2:id;36:9fd7580a-958a-4251-8fb3-89133c3e30cc;4:type;4:http;7:version;2:21#}5476:9:websocket;0:~8:response;3195:6:reason;2:OK,11:status_code;3:200#13:timestamp_end;18:1795113061.4114053^15:timestamp_start;18:1795113061.4097927^8:trailers;0:~7:content;2480:<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalogue | Stillroom</title>
+  <link rel="icon" type="image/webp" href="/assets/kite.webp">
+  <link rel="stylesheet" href="/assets/shop.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="wordmark" href="/"><span class="mark" aria-hidden="true"></span>Stillroom</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="/" aria-current="page">Catalogue</a>
+        <a class="nav-button" href="/login">Sign in</a>
+        
+      </nav>
+    </div>
+  </header>
+  <main class="shell main" id="main" tabindex="-1">
+    <h1 class="page-title">Catalogue</h1>
+    <section class="collection" id="collection" aria-labelledby="collection-heading">
+      <div class="section-heading">
+        <h2 id="collection-heading">Results for <span class="search-term">Morning &lt;sample&gt; &amp; &quot;notes&quot;</span></h2>
+        <p>0 products</p>
+      </div>
+      <form class="filters" action="/#collection" method="get">
+        <div class="filter-search">
+          <label for="search">Search products</label>
+          <input id="search" name="q" type="search" maxlength="100" value="Morning &lt;sample&gt; &amp; &quot;notes&quot;" placeholder="Coffee, carafe, filters…">
+        </div>
+        <div><label for="category">Category</label><select id="category" name="category">
+          <option value="">All categories</option>
+          <option value="coffee" selected>Coffee</option><option value="brewing">Brewing gear</option><option value="serveware">Serveware</option>
+        </select></div>
+        <div><label for="sort">Sort by</label><select id="sort" name="sort">
+          <option value="featured">Featured</option><option value="price-asc" selected>Price, low to high</option><option value="price-desc">Price, high to low</option><option value="name">Name, A to Z</option>
+        </select></div>
+        <button class="button">Apply</button>
+      </form>
+      
+      <div class="empty"><h3>No products found</h3><p>Try another term or choose a different category.</p><a href="/#collection">Clear filters</a></div>
+      
+    </section></main>
+  <footer class="site-footer"><div class="shell"><span class="footer-brand">Stillroom</span><span>Coffee &amp; brewing</span></div></footer>
+</body>
+</html>,7:headers;528:44:12:Content-Type,24:text/html; charset=utf-8,]163:23:Content-Security-Policy,131:default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; frame-src 'none',]36:22:X-Content-Type-Options,7:nosniff,]26:15:X-Frame-Options,4:DENY,]34:15:Referrer-Policy,11:same-origin,]65:13:Cache-Control,44:private, no-store, no-cache, must-revalidate,]25:14:Content-Length,4:2480,]40:4:Date,29:Thu, 19 Nov 2026 18:31:01 GMT,]28:10:Connection,10:keep-alive,]26:10:Keep-Alive,9:timeout=5,]]12:http_version;8:HTTP/1.1,}7:request;1125:4:path;71:/?q=Morning+%3Csample%3E+%26+%22notes%22&category=coffee&sort=price-asc,9:authority;0:,6:scheme;4:http,6:method;3:GET,4:port;5:18770#4:host;9:127.0.0.1;13:timestamp_end;18:1795113061.4073973^15:timestamp_start;17:1795113061.405955^8:trailers;0:~7:content;0:,7:headers;815:26:4:Host,15:127.0.0.1:18770,]34:16:Proxy-Connection,10:keep-alive,]55:9:sec-ch-ua,39:"Not:A-Brand";v="8", "Chromium";v="156",]25:16:sec-ch-ua-mobile,2:?0,]32:18:sec-ch-ua-platform,7:"Linux",]33:25:Upgrade-Insecure-Requests,1:1,]120:10:User-Agent,101:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36,]27:15:Accept-Language,5:en-GB,]159:6:Accept,145:text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7,]33:14:Sec-Fetch-Site,11:same-origin,]29:14:Sec-Fetch-Mode,8:navigate,]23:14:Sec-Fetch-User,2:?1,]29:14:Sec-Fetch-Dest,8:document,]82:7:Referer,68:http://127.0.0.1:18770/?q=Roaster%27s&category=coffee&sort=price-asc,]46:15:Accept-Encoding,23:gzip, deflate, br, zstd,]]12:http_version;8:HTTP/1.1,}6:backup;0:~17:timestamp_created;18:1795113061.4066377^7:comment;0:;8:metadata;0:}6:marked;0:;9:is_replay;0:~11:intercepted;5:false!11:server_conn;451:3:via;0:~19:timestamp_tcp_setup;18:1795113060.6021538^7:address;20:9:127.0.0.1;5:18770#]19:timestamp_tls_setup;0:~13:timestamp_end;0:~15:timestamp_start;18:1795113060.5973687^3:sni;0:~11:tls_version;0:~11:cipher_list;0:]6:cipher;0:~11:alpn_offers;0:]4:alpn;0:~16:certificate_list;0:]3:tls;5:false!5:error;0:~18:transport_protocol;3:tcp;2:id;36:a54ce9bc-9d67-41c1-884c-9e30c160dd20;8:sockname;20:9:127.0.0.1;5:56478#]8:peername;20:9:127.0.0.1;5:18770#]}11:client_conn;400:10:proxy_mode;7:regular;8:mitmcert;0:~19:timestamp_tls_setup;0:~13:timestamp_end;0:~15:timestamp_start;18:1795113060.5798314^3:sni;0:~11:tls_version;0:~11:cipher_list;0:]6:cipher;0:~11:alpn_offers;0:]4:alpn;0:~16:certificate_list;0:]3:tls;5:false!5:error;0:~18:transport_protocol;3:tcp;2:id;36:1f62c2fe-b650-4c2b-9795-187231671588;8:sockname;19:9:127.0.0.1;4:8093#]8:peername;20:9:127.0.0.1;5:47258#]}5:error;0:~2:id;36:9d917c0d-abaf-4f15-a53f-9ea93af80355;4:type;4:http;7:version;2:21#}

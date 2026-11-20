@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A recorded investigation of Stillroom’s retired FTP share, with original port scans, packet evidence and an offline dependency exercise.">
+  <title>Retiring the dispatch share · Stillroom</title>
+  <link rel="stylesheet" href="study.css">
+  <script src="study.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="mast"><div class="wrap mast-inner">
+  <a class="brand" href="../index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a>
+  <nav aria-label="Study sections"><a href="../index.html">Web study</a><a href="#film">Film</a><a href="#evidence">Tool evidence</a><a href="#cve">CVE exercise</a></nav>
+</div></header>
+<main id="main">
+<section class="hero" aria-labelledby="title"><div class="wrap hero-grid">
+  <div class="lead">
+    <p class="course">VŠB–TUO &nbsp; / &nbsp; Fundamentals of Security &nbsp; / &nbsp; Topic 11</p>
+    <h1 id="title">Retiring the dispatch share</h1>
+    <p class="intro">The shop had outgrown its FTP file drop. Could staff retire it and keep the catalogue online? Follow the change from the first port scan to the final HTTP response.</p>
+    <div class="actions"><a class="button" id="watch" href="#film"><i class="play" aria-hidden="true"></i>Watch the film</a><a class="text-link" href="#comparison">Compare the tools</a></div>
+  </div>
+  <figure class="plot" aria-labelledby="plot-caption">
+    <div class="plate-head"><span class="machine"><i aria-hidden="true"></i>stillroom.test</span><span>127.0.0.1</span></div>
+    <table class="paths"><caption id="plot-caption">Service exposure across both runs</caption>
+      <thead><tr><th scope="col">TCP port</th><th scope="col">Baseline</th><th scope="col">Hardened</th></tr></thead>
+      <tbody><tr><th scope="row"><b>21</b><small>FTP</small></th><td><span class="point">Open</span></td><td><span class="point closed">Closed</span></td></tr>
+      <tr><th scope="row"><b>8770</b><small>Shop</small></th><td><span class="point">Open</span></td><td><span class="point">Open</span></td></tr></tbody>
+    </table>
+    <figcaption>Source &nbsp; <a href="baseline.xml" download>Baseline XML</a><span aria-hidden="true"> / </span><a href="hardened.xml" download>Hardened XML</a></figcaption>
+  </figure>
+</div></section>
+
+<section class="wrap film band" id="film" aria-labelledby="film-title">
+  <div class="section-head"><h2 id="film-title">The recorded investigation</h2><a href="investigation.mp4" download>Download film <span class="ext">MP4</span></a></div>
+  <div class="cinema">
+    <video id="player" controls playsinline preload="metadata" poster="film-poster.jpg" width="1440" height="810" aria-label="Retiring the dispatch share, captioned investigation"><source src="investigation.mp4" type="video/mp4"><a href="investigation.mp4">Open the investigation film</a></video>
+    <div class="chapters"><div class="chap-head"><h3>Chapters</h3><span id="runtime">2:04</span></div>
+      <ol id="chapter-list">
+        <li><a class="fallback" href="investigation.mp4#t=0.000" data-start="0.000"><time datetime="PT0.000S">0:00</time><span>Baseline port inventory</span></a></li>
+        <li><a class="fallback" href="investigation.mp4#t=25.067" data-start="25.067"><time datetime="PT25.067S">0:25</time><span>Metasploit workspace</span></a></li>
+        <li><a class="fallback" href="investigation.mp4#t=50.133" data-start="50.133"><time datetime="PT50.133S">0:50</time><span>The dispatch file</span></a></li>
+        <li><a class="fallback" href="investigation.mp4#t=68.600" data-start="68.600"><time datetime="PT68.600S">1:08</time><span>Wireshark control exchange</span></a></li>
+        <li><a class="fallback" href="investigation.mp4#t=77.600" data-start="77.600"><time datetime="PT77.600S">1:17</time><span>Hardened retest</span></a></li>
+        <li><a class="fallback" href="investigation.mp4#t=99.667" data-start="99.667"><time datetime="PT99.667S">1:39</time><span>Offline dependency triage</span></a></li>
+      </ol>
+    </div>
+  </div>
+  <details class="transcript"><summary>Film transcript</summary><ol>
+    <li>The baseline XML records open sockets on 21 and 8770. A separate catalogue request identifies the web application.</li>
+    <li>The Metasploit workspace holds the imported host and both service records. The operator added the exposure note.</li>
+    <li>The SHA-256 of the seeded dispatch notice matches the digest in the original download capture.</li>
+    <li>The retained FTP frames show the account name, login acceptance, retrieval request and transfer completion.</li>
+    <li>After disabling FTP, the client received a connection refusal. The same catalogue returned HTTP 200.</li>
+    <li>The two fictional Java 8 inventories identify the packaged core component and version for advisory review.</li>
+  </ol></details>
+</section>
+
+<section class="evidence band" id="evidence" aria-labelledby="evidence-title"><div class="wrap">
+  <div class="section-head"><div><h2 id="evidence-title">Read the tool evidence</h2><p>Follow the same host through discovery, inventory, transfer and retest.</p></div><a href="verification.txt">Run log</a></div>
+  <nav class="exhibits" aria-label="Investigation stages">
+    <a href="#ports">Nmap</a><a href="#inventory">Metasploit</a><a href="#ftp">Wireshark &amp; FTP</a><a href="#retest">Retest</a>
+  </nav>
+  <article class="exhibit" id="ports">
+    <div><p class="tool">Nmap</p><h3>Two open ports. One uncertain label.</h3>
+      <p>The baseline scan identified pyftpdlib 2.2.0 on port 21. On 8770 it returned <code>apple-iphoto</code> from its port table. A direct request returned the Stillroom catalogue, <em>The first pour</em>.</p>
+      <p>Service discovery establishes exposure. Confirming the documented login took a separate FTP session.</p>
+      <div class="files"><a href="baseline.xml" download>Baseline scan <small>XML</small></a></div>
+    </div>
+    <figure><a href="baseline.png"><img src="baseline.png" width="1440" height="900" alt="Baseline Nmap output with a question mark on apple-iphoto, followed by the catalogue check"></a><figcaption>Compare the service label with the response directly below the scan. <a href="baseline.png">Full image</a></figcaption></figure>
+  </article>
+  <article class="exhibit" id="inventory">
+    <div><p class="tool">Metasploit Framework</p><h3>Trace a service record to its source.</h3>
+      <p>The operator imported the baseline XML into <code>topic11_ftp_baseline</code>. Both port records appear under the same host, together with a dated exposure note.</p>
+      <p>The workspace retained Nmap’s tentative web-service label. Importing it supplied a record of the scan without independently identifying the service.</p>
+      <div class="files"><a href="metasploit-inventory.txt">Console transcript <small>TXT</small></a></div>
+    </div>
+    <figure><a href="metasploit.png"><img loading="lazy" src="metasploit.png" width="1440" height="900" alt="Workspace, service list and operator note in the original Metasploit console"></a><figcaption>The note records the operator’s interpretation of the imported XML. <a href="metasploit.png">Full image</a></figcaption></figure>
+  </article>
+  <article class="exhibit" id="ftp">
+    <div><p class="tool">Wireshark &amp; FTP client</p><h3>Follow one dispatch notice.</h3>
+      <p>The server accepted the synthetic account (<code>230</code>). The client requested <code>dispatch.txt</code> with <code>RETR</code> and the server reported completion (<code>226</code>). The client verified the downloaded bytes against the seed.</p>
+      <p>The shared default concerns who knows the credential. Plain FTP exposed it on the control connection. The six-frame public extract omits credential bytes, leaving gaps in TCP sequence numbers.</p>
+      <div class="files"><a href="ftp-selected.pcapng" download>Redacted capture <small>PCAPNG</small></a><a href="transfer.png">Client capture <small>PNG</small></a><a href="share/dispatch.txt">Seed file <small>TXT</small></a></div>
+    </div>
+    <figure><a href="wireshark.png"><img loading="lazy" src="wireshark.png" width="1440" height="900" alt="Wireshark frame list with the RETR dispatch.txt request selected"></a><figcaption>Read the Info column from the login exchange to the completion reply. <a href="wireshark.png">Full image</a></figcaption></figure>
+  </article>
+  <article class="exhibit" id="retest">
+    <div><p class="tool">Nmap &amp; application checks</p><h3>Close FTP. Check the shop.</h3>
+      <p>From the same isolated client, the repeated scan found port 21 closed and port 8770 open. An independent FTP connection was refused. The catalogue request returned HTTP 200 and the expected page text.</p>
+      <p>Matching the host and ports across both runs makes the change directly comparable.</p>
+      <div class="files"><a href="hardened.xml" download>Retest scan <small>XML</small></a><a href="ftp-retest.txt">FTP check <small>TXT</small></a><a href="web-check.txt">Shop check <small>TXT</small></a></div>
+    </div>
+    <figure><a href="hardened.png"><img loading="lazy" src="hardened.png" width="1440" height="900" alt="Hardened scan and the surviving catalogue’s HTTP 200 response"></a><figcaption>The client could still reach the catalogue after the service change. <a href="hardened.png">Full image</a></figcaption></figure>
+  </article>
+<div class="comparison" id="comparison">
+    <h3>How the tools differ</h3>
+    <table><thead><tr><th scope="col">Tool</th><th scope="col">Where its evidence came from</th><th scope="col">What needed another check</th></tr></thead>
+    <tbody><tr><th scope="row">Nmap</th><td>Responses to TCP and service probes at scan time.</td><td>The shop’s HTTP response resolved the label on 8770.</td></tr>
+    <tr><th scope="row">Metasploit</th><td>Imported scan records and a dated operator note.</td><td>The original XML distinguishes a probe result from a port-table guess.</td></tr>
+    <tr><th scope="row">Wireshark</th><td>FTP control frames observed during the transfer.</td><td>The client’s byte comparison verified the downloaded file.</td></tr></tbody></table>
+  </div>
+</div></section>
+
+<section class="wrap band exercise" id="cve" aria-labelledby="cve-title">
+  <div><p class="tool">Offline exercise</p><h2 id="cve-title">CVE-2021-44228</h2><p>A fictional Java 8 dispatch worker ships with two software inventories. Match the packaged component and version to Apache’s affected range, then explain what more you would need to establish runtime exposure.</p><a class="button light" href="cve/WORKSHEET.md">Open the worksheet</a></div>
+  <div class="documents"><h3>Exercise materials</h3><a href="cve/inventory-before.json">Before inventory <small>JSON</small></a><a href="cve/inventory-after.json">After inventory <small>JSON</small></a><a href="cve/ADVISORY-NOTE.md">Offline advisory note <small>MD</small></a><a href="https://logging.apache.org/security.html#CVE-2021-44228">Apache advisory <small>Web</small></a><details><summary>Check your answer</summary><p><a href="cve/REVIEWER-KEY.md">Reviewer key</a> · <a href="cve-triage.png">Recorded comparison</a></p></details></div>
+</section>
+</main>
+<footer><div class="wrap foot"><div><strong>Student evaluation</strong><p>The reflected-search case shaped the student’s choice of tool.</p></div><a href="../evaluation.html#student-opinion">Read the evaluation</a><a href="run-guide.txt">Run instructions</a></div></footer>
+</body></html>

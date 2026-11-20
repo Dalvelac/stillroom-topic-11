@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A reproducible local comparison of Burp Suite Community, ZAP and mitmproxy on the Stillroom shop.">
+<title>Method and sources | Stillroom security study</title><link rel="stylesheet" href="report.css">
+<script src="reflection.js" defer></script><script src="report.js" defer></script></head><body>
+<a class="skip" href="#main">Skip to content</a><header><div class="wrap head"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a><nav aria-label="Main"><a href="index.html">Overview</a><a href="cases.html">Case studies</a><a href="comparison.html">Comparison</a><a href="method.html" class="active" aria-current="page">Method &amp; sources</a><a href="evaluation.html">Evaluation</a><a href="infrastructure/index.html">Infrastructure</a></nav></div></header>
+<main id="main"><section class="pageintro"><div class="wrap"><h1>Method and sources</h1><p class="intro">A local SQLite shop supplied repeatable orders, receipts and account roles. This page specifies the fixture, the browser journey, what counted as evidence, and how to repeat it.</p></div></section><nav class="subnav wrap" aria-label="Method sections"><a href="#testbed">Testbed</a><a href="#repeat">Repeat the journey</a><a href="#artifacts">Evidence index</a><a href="#background">State of the art</a><a href="#references">References</a></nav><section class="band"><div class="wrap"><div class="story"><div id="testbed"><h2>Testbed and scope</h2><p>The course brief calls Topic 11 “Comparison of the Most Used Penetration Testing Tools and Systems.” The practical question here is how three HTTP proxies support evidence gathering on one local shop. The chosen tools cover desktop inspection, passive rule-based triage and saved-flow analysis. The study measures this selection and makes no popularity estimate.</p>
+<p>Stillroom uses Node.js 26.13.1 and SQLite. Nine products, two customers with separate order histories, and a staff account form the starting state. Checkout uses simulated payment. Staff can advance fulfilment and customers can see their own status. Each proxy run started the same server code with a fresh in-memory SQLite database at <code>127.0.0.1:18770</code>. The ordinary shop uses a persistent database at port 8770.</p>
+<p>Artix Linux, Chromium 156.0.8078.4, a clean browser context per proxy, ordinary HTML form submissions and plain loopback HTTP were common to all three journeys. The test runner drove the same UI actions. Media was captured on 19 November 2026 UTC. Burp used a temporary Community project with interception off, ZAP used Safe mode with the packaged release passive rules (revision 70), and mitmdump saved the proxied exchanges for offline reading.</p></div>
+<h3>Roles and boundaries</h3><div class="tablebox"><table><thead><tr><th scope="col">Role</th><th scope="col">Ordinary journey</th><th scope="col">Policy checked by regressions</th></tr></thead><tbody><tr><th scope="row">Guest</th><td>Search, filter, sort and browse pages</td><td>Authentication required for protected resources.</td></tr><tr><th scope="row">Alex and Jamie</th><td>Shop, browse their own order histories, download their own receipts</td><td>Other-customer details and receipts receive the same generic response as unknown resources.</td></tr><tr><th scope="row">Sam, staff</th><td>View the queue and advance the next fulfilment step</td><td>Staff may read an order and advance it one stage. Receipts are reserved for the owning customer.</td></tr></tbody></table></div><div class="finding"><strong>Positive control</strong>The owned receipt response uses Content-Disposition for an HTML attachment and a private, no-store cache policy. The native capture preserves both headers, and the receipt regression asserts the attachment and no-store behaviour. <a href="evidence/response-samples.json">Captured headers</a> · <a href="source.html#ownership-test">Receipt assertions</a></div></div></div></section><section class="band"><div class="wrap"><div class="story"><div id="repeat"><h2>Repeat the normal browser journey</h2><ol class="steps">
+<li>With Node 24 or later, run <code>node fixture.mjs</code> in the showcase source directory. Open <code>http://127.0.0.1:18770/</code> through one proxy in a fresh browser profile. Keep the target and listener on loopback. Use the test accounts in the shop README.</li>
+<li>Browse page two, select Coffee, sort by ascending price and search for <code>Roaster's</code>. Apply the harmless marker from the reflected-text case and read the rendered result.</li>
+<li>Sign in as Alex, add Roaster’s Reserve, change the cart quantity to two and approve the test payment. Open the order and download the receipt.</li>
+<li>Sign out and sign in as Sam. Open the same order from Fulfilment and choose Start processing. Sign in again as Alex and read the updated order and timeline. Finish with Jamie’s My orders view.</li>
+<li>Match the exchanges in the tool history or saved flow. For ZAP, wait for its passive queue to empty. Stop the fixture with Ctrl+C and start it again before repeating with another tool.</li>
+<li>From the shop directory run <code>npm run check</code> and <code>node --test</code>. Compare the full suite output with the focused commands on the four case pages. Timing uses a separate public GET with the three listeners running and an idle recorder.</li></ol></div>
+<h3>How the records were compared</h3><p>Browser response events were collected once per tool through checkout, receipt, staff change and the customer reads. Native evidence came from Burp’s Save items export, the ZAP messages and alerts API, and a saved mitmdump flow file read offline. Method, decoded route and query, status and sequence agreed for every one of the 40 application documents. The retained extracts omit cookies, login bodies, unrelated traffic and proxy credentials.</p>
+<p>For the performance comparison, curl 8.23.0 timed a single HTTP connection and complete document response per sample. Two blocks produced 64 measurements per path, with a cyclic path order so that each path occupied each position equally often. The median is the middle pair’s mean. The p95 uses the nearest rank. Absolute latency, the rules installed in ZAP and the hardware affect comparisons with another machine.</p>
+<h3>Retest from the delivered source</h3><p>The recorded app passed its syntax checks and all 12 tests. A second run extracted the clean source archive in another directory, verified all nine source and test file hashes, reran the syntax check and passed the same 12 tests on fresh SQLite fixtures. This retest checked reproducibility of the control-enabled build. <a href="evidence/regression.tap">Original run</a> · <a href="evidence/archive-retest.tap">Archive retest</a></p>
+<h3>Evidence boundaries</h3><p>The film consists of seven selections from real desktop recordings, assembled with captions. The stills come from the live shop, the native tools and the test terminal. The JSON files are field-limited extracts from actual captures. The separate offline exercises supplied with the target use fictional observations and contributed no measurements or findings to this site.</p></div></div></section><section class="band"><div class="wrap"><div class="story"><h2>The checkout used in each run</h2><figure class="shot"><a href="evidence/checkout.png" aria-label="Open full-size screenshot. Alex’s actual checkout screen shows the seeded delivery address, the simulated payment selector and a €48 order summary."><img loading="lazy" src="evidence/checkout.png" alt="Alex’s actual checkout screen shows the seeded delivery address, the simulated payment selector and a €48 order summary."></a><figcaption>Alex’s actual checkout screen shows the seeded delivery address, the simulated payment selector and a €48 order summary.</figcaption></figure></div></div></section><section class="band"><div class="wrap"><div class="story"><div id="artifacts"><h2>Evidence index</h2><div class="tablebox"><table><thead><tr><th scope="col">Run or check</th><th scope="col">Artifact</th><th scope="col">Companion record</th></tr></thead><tbody><tr><th scope="row">Burp Suite</th><td><a href="evidence/burp-history.json">Native history</a></td><td><a href="evidence/burp-journey.json">Browser record</a></td></tr><tr><th scope="row">ZAP</th><td><a href="evidence/zap-passive.json">Native messages, alert counts and sample</a></td><td><a href="evidence/zap-journey.json">Browser record</a></td></tr><tr><th scope="row">mitmdump</th><td><a href="evidence/mitm-flows.json">Native flow extract</a></td><td><a href="evidence/mitm-journey.json">Browser record</a></td></tr><tr><th scope="row">Response samples</th><td><a href="evidence/response-samples.json">Selected native headers</a></td><td><a href="evidence/receipt-6105.html">Original synthetic receipt body</a></td></tr><tr><th scope="row">Native guest samples</th><td><a href="evidence/guest-search.burp.xml">Burp XML with two guest exchanges</a></td><td><a href="evidence/guest-search.mitm">Two saved mitmproxy guest flows</a></td></tr><tr><th scope="row">Build and test</th><td><a href="evidence/syntax-check.txt">Syntax check log</a></td><td><a href="evidence/regression.tap">Full TAP result</a></td></tr><tr><th scope="row">Independent retest</th><td><a href="evidence/archive-retest.tap">TAP from an extracted copy of the source bundle</a></td><td><a href="evidence/shop-source-sha256.txt">Verified source hashes</a></td></tr><tr><th scope="row">Latency</th><td><a href="evidence/latency-a.csv">Block A</a></td><td><a href="evidence/latency-b.csv">Block B</a></td></tr><tr><th scope="row">Target and checksum</th><td><a href="evidence/stillroom-source.zip">Download the clean shop source and fixture launcher</a></td><td><a href="evidence/SHA256SUMS.txt">Evidence SHA-256 manifest</a></td></tr><tr><th scope="row">Reproduction</th><td><a href="evidence/repeat-timings.py">Local timing script</a></td><td><a href="evidence/shop-source-sha256.txt">Shop revision hashes</a></td></tr><tr><th scope="row">Recording</th><td><a href="evidence/walkthrough.mp4">Captioned MP4</a></td><td><a href="evidence/chapters.json">Chapters and transcript</a></td></tr></tbody></table></div></div></div></div></section><section class="band"><div class="wrap"><div class="method-section"><section id="background">
+  <h2>State of the art in web application testing with HTTP proxies</h2>
+  <p>
+    One browser action can trigger both a page request and a later API call.
+    OWASP’s Web Security Testing Guide recommends recording the method, URL,
+    parameter locations and authentication state when mapping application entry
+    points. Each request and its response give the three tools a common unit for
+    comparison. Coverage depends on which exchanges pass through the proxy.
+    <a href="#background-ref-wstg" aria-label="Reference 1, OWASP Web Security Testing Guide">[1]</a>
+  </p>
+
+  <h3>Manual inspection with Burp Suite Community Edition</h3>
+  <p>
+    Community Edition includes Burp Proxy and its numbered HTTP history. With
+    Intercept off, the history continues to record traffic. If the response to a
+    sign-in POST sets a session cookie and redirects the browser, a reviewer can
+    cite the entry showing the POST, redirect status and Set-Cookie header. PortSwigger lists
+    its automated web vulnerability scanner as a Professional feature.
+    <a href="#background-ref-community" aria-label="Reference 2, Burp Suite Community Edition">[2]</a>
+    <a href="#background-ref-history" aria-label="Reference 3, Burp Proxy HTTP history">[3]</a>
+  </p>
+
+  <h3>Passive checks with ZAP in Safe mode</h3>
+  <p>
+    ZAP’s passive scanner applies rules in the background to HTTP and WebSocket
+    messages already passing through the proxy. Safe mode blocks active scanning,
+    crawling and resending requests.
+    <a href="#background-ref-passive" aria-label="Reference 4, ZAP Passive Scanner Add-on">[4]</a>
+    <a href="#background-ref-modes" aria-label="Reference 5, ZAP modes">[5]</a>
+  </p>
+  <p>
+    For example, rule 10010 flags a cookie issued without HttpOnly. A reviewer
+    can inspect the Set-Cookie header and check which cookie the alert names.
+    If it carries the session identifier, HttpOnly would prevent page scripts
+    from reading that value.
+    <a href="#background-ref-cookie-rule" aria-label="Reference 6, ZAP alert 10010">[6]</a>
+    <a href="#background-ref-session" aria-label="Reference 7, OWASP session management guidance">[7]</a>
+  </p>
+
+  <h3>Offline review with mitmproxy and mitmdump</h3>
+  <p>
+    mitmproxy provides an interactive terminal view of HTTP exchanges. Its
+    non-interactive companion mitmdump can save those exchanges to a flow file and
+    filter it offline. A second reviewer can apply the same POST filter to the
+    same capture and examine the sign-in response without repeating the login.
+    <a href="#background-ref-mitmproxy" aria-label="Reference 8, mitmproxy and mitmdump documentation">[8]</a>
+  </p>
+
+  <h3>Why an alert needs a second observation</h3>
+  <p>ZAP describes rule 10031 as a passive lead for analyst review. For a reflected value, the HTML context determines which characters must be encoded. In the catalogue case, the raw response and the browser’s parsed document answer different questions. For SQL construction, the application’s prepared statement and separately bound values supply evidence an HTTP proxy cannot see. <a href="#ref-10031">[9]</a> <a href="#ref-encoding">[10]</a> <a href="#ref-sql">[11]</a></p>
+</section>
+
+<section id="references">
+  <h2>References</h2>
+  <p>Online sources consulted 19 November 2026.</p>
+  <ol>
+    <li id="background-ref-wstg">OWASP. Web Security Testing Guide v4.2, WSTG-v42-INFO-06. <a href="https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/01-Information_Gathering/06-Identify_Application_Entry_Points/">Identify Application Entry Points</a>.</li>
+    <li id="background-ref-community">PortSwigger. <a href="https://portswigger.net/burp/communitydownload">Burp Suite Community Edition and Professional feature comparison</a>.</li>
+    <li id="background-ref-history">PortSwigger. Burp Proxy documentation. <a href="https://portswigger.net/burp/documentation/desktop/tools/proxy/http-history">HTTP history</a>.</li>
+    <li id="background-ref-passive">ZAP. <a href="https://www.zaproxy.org/docs/desktop/addons/passive-scanner/">Passive Scanner Add-on</a>.</li>
+    <li id="background-ref-modes">ZAP. <a href="https://www.zaproxy.org/docs/desktop/start/features/modes/">Modes</a>.</li>
+    <li id="background-ref-cookie-rule">ZAP. Passive alert 10010. <a href="https://www.zaproxy.org/docs/alerts/10010/">Cookie No HttpOnly Flag</a>.</li>
+    <li id="background-ref-session">OWASP. Session Management Cheat Sheet. <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#httponly-attribute">HttpOnly Attribute</a>.</li>
+    <li id="background-ref-mitmproxy">mitmproxy project. <a href="https://docs.mitmproxy.org/stable/">Introduction to mitmproxy and mitmdump, including filtering saved traffic</a>.</li>
+    <li id="ref-10031">ZAP. <a href="https://www.zaproxy.org/docs/alerts/10031/">User Controllable HTML Element Attribute (Potential XSS), passive rule 10031</a>.</li>
+    <li id="ref-encoding">OWASP Cheat Sheet Series. <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">Cross Site Scripting Prevention Cheat Sheet</a>.</li>
+    <li id="ref-sql">OWASP Cheat Sheet Series. <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">SQL Injection Prevention Cheat Sheet</a>.</li>
+    <li>ZAP. <a href="https://www.zaproxy.org/docs/alerts/10202/">Absence of Anti-CSRF Tokens, passive rule 10202</a>.</li>
+    <li>Filip Řezáč, VŠB–TU Ostrava. <cite>Fundamentals of the Security in Communications, Assignment of the Semestral Project</cite>, 6 August 2021, pp. 1–2, Topic 11 and section 2. Course file <code>ZBVK_Zadani_projektu.pdf</code>.</li>
+  </ol>
+</section>
+</div></div></section></main><footer><div class="wrap"><span>VŠB–TUO · Fundamentals of the Security in Communications</span><a href="method.html#references">Sources and attribution</a></div></footer></body></html>

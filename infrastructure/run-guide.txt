@@ -1,0 +1,127 @@
+Optional infrastructure investigation
+
+The legacy dispatch share represents a file drop the shop has retired. Baseline runs the real shop and a read-only FTP service. Hardened runs the same shop with FTP disabled. Both use the same lab host name, ports, sample and web state. The completed [recording and evidence](infra/recording/index.html) open offline. **Add your own opinion and contribution to the Topic 11 showcase before submission.**
+
+### Start, switch, reset and stop
+
+Use a Linux machine with unprivileged user/network/mount/PID namespaces, Bash, util-linux (`unshare`, `mount`, `flock`), iproute2, curl, Node 24+, and Python 3 with venv and pip. First-time setup needs internet access to install the pinned FTP package in `infra/.venv`. The investigation itself runs locally. For the evidence steps use Nmap, Metasploit Framework with a working PostgreSQL connection, and Wireshark with dumpcap and TShark. On this workstation, enable the prepared private copies in **each host terminal** before starting. On another Linux machine, use those tools from its package manager or vendor installation. [pyftpdlib](https://github.com/giampaolo/pyftpdlib) · [Metasploit database support](https://docs.metasploit.com/docs/using-metasploit/intermediate/metasploit-database-support.html)
+
+```sh
+# This workstation. Run from topic11-stillroom.
+export PATH="$HOME/.cache/stillroom-topic11/bin:$PATH"
+./infra/lab setup
+./infra/lab baseline
+```
+
+The launcher opens a shell at `stillroom[baseline]$` inside a fresh namespace. Its only network link is `lo`. A private hosts file maps **stillroom.test** to **127.0.0.1**. Run the client steps in this shell. The normal shop starts through its existing `server.mjs`. A private mount maps the lab web database to `infra/.state/shop/`, separate from the everyday shop’s `data/`. You can run the everyday shop on the host at the same time. FTP binds to loopback inside the namespace. There is no bridge, published port or route to the LAN. Linux namespace support is required for this launcher.
+
+Type `exit` to stop the services and leave the namespace. From the shop directory, use `./infra/lab hardened` for the retest or `./infra/lab baseline` to restore FTP. Each start recreates the FTP share from [dispatch.txt](infra/share/dispatch.txt) and restores its account. Changing modes keeps both SQLite databases and the evidence directory. Leave `reset.mjs` out of this investigation. To start a fresh evidence set, choose a new run directory and workspace name.
+
+### 1. Nmap exposure check
+
+In the **baseline lab shell**, start from its initial working directory, `infra/runs`. Choose one unused name and use it throughout. These examples use `my-run-01`. New evidence files are private by default.
+
+```sh
+mkdir -m 700 my-run-01 && cd my-run-01
+ip -br address
+getent ahostsv4 stillroom.test
+nmap --unprivileged -sT -sV --version-light -Pn -n -p 21,8770 -oX baseline.xml stillroom.test
+sha256sum baseline.xml
+curl --disable --noproxy '*' -fsS http://127.0.0.1:8770/ -o catalogue-before.html
+grep -o 'The first pour' catalogue-before.html
+```
+
+This is one host, two TCP ports and a light service identification pass. The scan describes ports reachable from this client at this time. Compare each XML `service` element’s `method` and `conf` attributes. A port-table guess can differ from what the application actually serves. The shop validates its HTTP Host header, so use the exact numeric URL for the catalogue. Nmap has no evidence that an account signed in. Keep this lab shell open for step 3. [Nmap XML output](https://nmap.org/book/output-formats-xml-output.html)
+
+### 2. Metasploit inventory
+
+Open a **second host terminal** in the shop directory. Start Metasploit from the directory that contains your XML. On this workstation the prepared wrapper starts and stops its private Unix-socket PostgreSQL server with the console. With a regular Framework installation, start its local PostgreSQL database according to your distribution and check `db_status`.
+
+```sh
+export PATH="$HOME/.cache/stillroom-topic11/bin:$PATH"
+cd infra/runs/my-run-01
+sha256sum baseline.xml
+msfconsole
+```
+
+At the Framework prompt, use a new baseline workspace for each run. Save the spool file in the current working directory.
+
+```text
+db_status
+workspace -a topic11_my_run_01
+spool inventory.txt
+db_import baseline.xml
+workspace
+hosts -c address,name
+services -c port,name,state,info
+notes -a -t lab.exposure -n "Baseline XML reports FTP open on TCP 21." 127.0.0.1
+notes -t lab.exposure
+spool off
+exit -y
+```
+
+Compare the address and service records with the original XML. The note is your annotation. A service name repeated by an importer is still one source of evidence. Use a separate workspace if you also import hardened XML so the baseline stays available.
+
+### 3. Document the normal FTP retrieval
+
+Return to the **baseline lab shell** in your run directory. The synthetic account is `dispatch`; its lab-default password is **`Stillroom-Demo-Only`**. It can list and retrieve the one file. The FTP account has no corresponding shop login. The following capture covers only this fixture’s control connection. The data connection uses a separate port.
+
+```sh
+dumpcap -q -i lo -f 'tcp port 21' -w control-private.pcapng >capture.log 2>&1 &
+cap=$!
+# Wait for capture.log to name the output file before continuing.
+cat capture.log
+curl --disable --noproxy '*' --fail --show-error --silent --user dispatch \
+  --output dispatch.txt ftp://stillroom.test/dispatch.txt
+# Type the documented password at curl's hidden prompt.
+kill -INT "$cap"
+wait "$cap"
+cmp dispatch.txt ../../share/dispatch.txt && sha256sum dispatch.txt
+```
+
+Inspect the original privately. The command name `PASS` and server replies are visible on the control channel. The client used a known, supplied credential. The successful reply supports account acceptance, while the visibility of the exchange establishes the transport property. Changing password strength would still leave standard FTP without transport encryption. The matching file digest supplies separate evidence of the download.
+
+For **screenshots, clips and the submission**, export just the allowlisted frames to a new capture. Open that file in the **host** Wireshark GUI. Password-bearing frames and the private capture stay out of the recording. Sequence-gap annotations can appear because frames were deliberately omitted. [Wireshark FTP field reference](https://www.wireshark.org/docs/dfref/f/ftp.html)
+
+```sh
+# Baseline lab shell, in the run directory
+tshark -r control-private.pcapng \
+  -Y 'ftp.request.command == "USER" || ftp.request.command == "RETR" || ftp.response.code in {220, 230, 331, 226}' \
+  -w ftp-selected.pcapng
+python3 -c "from pathlib import Path; assert b'Stillroom-Demo-Only' not in Path('ftp-selected.pcapng').read_bytes()"
+```
+
+```sh
+# Second host terminal, in the same run directory
+wireshark -n -r ftp-selected.pcapng
+```
+
+Show the welcome, USER, the 331 challenge, 230 acceptance, RETR filename and 226 completion. Keep the README credential, any private packet bytes and the password entry off-screen.
+
+### 4. Retest the retired service
+
+Type `exit` in the baseline lab shell. In its host terminal, from the shop directory, run `./infra/lab hardened`. In the new lab shell use the same run directory, target and Nmap options. Only the XML filename changes.
+
+```sh
+cd my-run-01
+nmap --unprivileged -sT -sV --version-light -Pn -n -p 21,8770 -oX hardened.xml stillroom.test
+curl --disable --noproxy '*' -fsS -o catalogue-after.html -w 'HTTP %{http_code}\n' http://127.0.0.1:8770/
+grep -o 'The first pour' catalogue-after.html
+python3 -c "import socket,errno; s=socket.socket(); rc=s.connect_ex(('127.0.0.1',21)); print(errno.errorcode.get(rc,rc)); assert rc==errno.ECONNREFUSED"
+exit
+```
+
+### 5. Offline CVE evidence exercise
+
+Open the [blank worksheet](infra/cve/WORKSHEET.md), [first inventory](infra/cve/inventory-before.json), [second inventory](infra/cve/inventory-after.json) and [offline Apache reference note](infra/cve/ADVISORY-NOTE.md). Compare the two files with `diff -u infra/cve/inventory-before.json infra/cve/inventory-after.json` from the shop directory. A difference yields exit status 1. Record the artifact, Java branch, affected interval and evidence missing for a runtime or incident conclusion. Check the [separate reviewer key](infra/cve/REVIEWER-KEY.md) after completing the worksheet. These JSON files are fictional inventory records. The shop loads no Log4j dependency. [Apache CVE-2021-44228 advisory](https://logging.apache.org/security.html#CVE-2021-44228)
+
+| Evidence | Show on screen | Question to answer |
+| --- | --- | --- |
+| Nmap baseline XML | Host, both port states and service identification methods | Which service did Nmap identify from a probe? |
+| Metasploit workspace and note | Active workspace, imported services and dated note | Which observations came from the XML, and what did you add? |
+| FTP client and Wireshark | Redacted exchange plus matching download digest | What establishes a successful login, and what separately establishes plaintext transport? |
+| Hardened XML and web check | Both port states beside HTTP status and catalogue title | Was FTP removed while the web workflow stayed available? |
+| CVE inventories and worksheet | Matching core artifact in both builds beside Apache’s interval | Which dependency claim can you support, and what runtime evidence is missing? |
+
+**Before submitting**, add your own opinion to the finished site's **Evaluation** page. Explain which tool changed your interpretation of one observation, and which work you personally repeated.
+

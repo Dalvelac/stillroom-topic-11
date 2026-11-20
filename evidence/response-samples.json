@@ -1,0 +1,38 @@
+{
+  "provenance": "Selected response lines from the native Burp before-timing export. Receipt HTML is the original response body.",
+  "samples": [
+    {
+      "method": "GET",
+      "path": "/",
+      "statusLine": "HTTP/1.1 200 OK",
+      "headers": [
+        "Content-Type: text/html; charset=utf-8",
+        "X-Frame-Options: DENY",
+        "Cache-Control: private, no-store, no-cache, must-revalidate"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/receipts/6105",
+      "statusLine": "HTTP/1.1 200 OK",
+      "headers": [
+        "Content-Type: text/html; charset=utf-8",
+        "X-Frame-Options: DENY",
+        "Cache-Control: private, no-store, no-cache, must-revalidate",
+        "Content-Disposition: attachment; filename=\"stillroom-receipt-6105.html\""
+      ],
+      "bodySha256": "a04d5964cec1c44841bc433c803dc21b8394d7e2c697cd8aec4c781408e0c551"
+    },
+    {
+      "method": "POST",
+      "path": "/staff/orders/2105/status",
+      "statusLine": "HTTP/1.1 303 See Other",
+      "headers": [
+        "Content-Type: text/html; charset=utf-8",
+        "X-Frame-Options: DENY",
+        "Cache-Control: private, no-store, no-cache, must-revalidate",
+        "Location: /orders/2105"
+      ]
+    }
+  ]
+}

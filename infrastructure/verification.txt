@@ -1,0 +1,12 @@
+Stillroom infrastructure run, 19 November 2026 UTC
+Environment: Linux with unprivileged user, mount, PID and network namespaces.
+Software used: Node 26.13.1, pyftpdlib 2.2.0, Nmap 7.993, Metasploit Framework 6.5.12-dev, Wireshark/TShark 4.7.4.
+Baseline: one IPv4 host and two TCP ports. Port 21 open with probed FTP identity. Port 8770 open with port-table identification.
+Inventory: same baseline XML imported in workspace topic11_ftp_baseline. Host and two service records stored. Operator note persisted after reconnecting to PostgreSQL.
+FTP: authenticated synthetic user, one file listed and downloaded. Attempt to create a directory received 550. Download matched the source byte for byte.
+Downloaded and seeded SHA-256: 3565d37c260aa4f6627e05cc98a9adf05d661e7c433a1754cd8f2d6c1aad3280
+Capture: 27 local control packets captured with zero reported drops. The private raw bytes contain the documented password in a PASS command. The shareable extract contains six original frames and excludes the credential bytes.
+Hardened: port 21 closed and an independent connect returned ECONNREFUSED. Port 8770 open. HTTP 200 and catalogue text verified.
+Existing shop: original server entry point also served the catalogue on host loopback. Syntax check and 12 of 12 existing tests passed. SHA-256 of the ordinary shop database matched before and after.
+CVE scope: two fictional Java 8 JSON inventories only. Dependency comparison is specific to CVE-2021-44228.
+

@@ -1,0 +1,321 @@
+{
+  "provenance": "ZAP local API views. Only Stillroom messages. Headers, session tokens and request bodies omitted. Snapshot before timing probes.",
+  "version": "2.17.0",
+  "mode": "safe",
+  "remainingPassiveRecords": 0,
+  "documents": [
+    {
+      "id": "1",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "12",
+      "method": "GET",
+      "target": "/?page=2",
+      "status": 200
+    },
+    {
+      "id": "16",
+      "method": "GET",
+      "target": "/?q=&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "id": "17",
+      "method": "GET",
+      "target": "/?q=Roaster%27s&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "id": "18",
+      "method": "GET",
+      "target": "/?q=Morning+%3Csample%3E+%26+%22notes%22&category=coffee&sort=price-asc",
+      "status": 200
+    },
+    {
+      "id": "19",
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "id": "20",
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "id": "21",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "22",
+      "method": "GET",
+      "target": "/products/roasters-reserve",
+      "status": 200
+    },
+    {
+      "id": "24",
+      "method": "POST",
+      "target": "/cart/items",
+      "status": 303
+    },
+    {
+      "id": "26",
+      "method": "GET",
+      "target": "/cart",
+      "status": 200
+    },
+    {
+      "id": "27",
+      "method": "POST",
+      "target": "/cart/items/4/update",
+      "status": 303
+    },
+    {
+      "id": "30",
+      "method": "GET",
+      "target": "/cart",
+      "status": 200
+    },
+    {
+      "id": "31",
+      "method": "GET",
+      "target": "/checkout",
+      "status": 200
+    },
+    {
+      "id": "32",
+      "method": "POST",
+      "target": "/checkout",
+      "status": 303
+    },
+    {
+      "id": "33",
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "id": "35",
+      "method": "GET",
+      "target": "/receipts/6105",
+      "status": 200
+    },
+    {
+      "id": "37",
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "id": "38",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "39",
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "id": "40",
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "id": "41",
+      "method": "GET",
+      "target": "/staff/orders",
+      "status": 200
+    },
+    {
+      "id": "43",
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "id": "44",
+      "method": "POST",
+      "target": "/staff/orders/2105/status",
+      "status": 303
+    },
+    {
+      "id": "47",
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "id": "48",
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "id": "49",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "50",
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "id": "51",
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "id": "52",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "53",
+      "method": "GET",
+      "target": "/orders",
+      "status": 200
+    },
+    {
+      "id": "54",
+      "method": "GET",
+      "target": "/orders/2105",
+      "status": 200
+    },
+    {
+      "id": "55",
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "id": "56",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "57",
+      "method": "GET",
+      "target": "/login",
+      "status": 200
+    },
+    {
+      "id": "58",
+      "method": "POST",
+      "target": "/login",
+      "status": 303
+    },
+    {
+      "id": "59",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    },
+    {
+      "id": "60",
+      "method": "GET",
+      "target": "/orders",
+      "status": 200
+    },
+    {
+      "id": "61",
+      "method": "POST",
+      "target": "/logout",
+      "status": 303
+    },
+    {
+      "id": "62",
+      "method": "GET",
+      "target": "/",
+      "status": 200
+    }
+  ],
+  "alerts": [
+    {
+      "rule": "10031",
+      "name": "User Controllable HTML Element Attribute (Potential XSS)",
+      "risk": "Informational",
+      "confidence": "Low",
+      "instances": 11,
+      "paths": [
+        "/"
+      ]
+    },
+    {
+      "rule": "10202",
+      "name": "Absence of Anti-CSRF Tokens",
+      "risk": "Medium",
+      "confidence": "Low",
+      "instances": 13,
+      "paths": [
+        "/",
+        "/cart",
+        "/checkout",
+        "/login",
+        "/orders",
+        "/orders/2105",
+        "/products/roasters-reserve",
+        "/staff/orders"
+      ]
+    },
+    {
+      "rule": "10111",
+      "name": "Authentication Request Identified",
+      "risk": "Informational",
+      "confidence": "High",
+      "instances": 3,
+      "paths": [
+        "/login"
+      ]
+    },
+    {
+      "rule": "10112",
+      "name": "Session Management Response Identified",
+      "risk": "Informational",
+      "confidence": "Medium",
+      "instances": 1,
+      "paths": [
+        "/login"
+      ]
+    },
+    {
+      "rule": "10112",
+      "name": "Session Management Response Identified",
+      "risk": "Informational",
+      "confidence": "High",
+      "instances": 1,
+      "paths": [
+        "/login"
+      ]
+    }
+  ],
+  "sample": {
+    "id": "8",
+    "messageId": "18",
+    "pluginId": "10031",
+    "name": "User Controllable HTML Element Attribute (Potential XSS)",
+    "risk": "Informational",
+    "confidence": "Low",
+    "param": "q",
+    "url": "http://127.0.0.1:18770/?q=Morning+%3Csample%3E+%26+%22notes%22&category=coffee&sort=price-asc",
+    "rawResponseLines": [
+      "<h2 id=\"collection-heading\">Results for <span class=\"search-term\">Morning &lt;sample&gt; &amp; &quot;notes&quot;</span></h2>",
+      "<input id=\"search\" name=\"q\" type=\"search\" maxlength=\"100\" value=\"Morning &lt;sample&gt; &amp; &quot;notes&quot;\" placeholder=\"Coffee, carafe, filters\u2026\">"
+    ]
+  }
+}

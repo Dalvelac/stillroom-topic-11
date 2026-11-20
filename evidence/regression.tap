@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: catalogue SQL binds literal search text and uses an allowlisted sort expression
+ok 1 - catalogue SQL binds literal search text and uses an allowlisted sort expression
+  ---
+  duration_ms: 236.587502
+  type: 'test'
+  ...
+# Subtest: guests can search, filter, sort, and paginate the catalogue
+ok 2 - guests can search, filter, sort, and paginate the catalogue
+  ---
+  duration_ms: 328.25712
+  type: 'test'
+  ...
+# Subtest: search reflection is encoded in HTML text and the quoted value attribute
+ok 3 - search reflection is encoded in HTML text and the quoted value attribute
+  ---
+  duration_ms: 239.187909
+  type: 'test'
+  ...
+# Subtest: order detail requires sign-in and ownership or staff access
+ok 4 - order detail requires sign-in and ownership or staff access
+  ---
+  duration_ms: 528.389025
+  type: 'test'
+  ...
+# Subtest: receipts authorize their own resource for guest, owner, peer, and staff
+ok 5 - receipts authorize their own resource for guest, owner, peer, and staff
+  ---
+  duration_ms: 511.288125
+  type: 'test'
+  ...
+# Subtest: only staff may submit an otherwise valid fulfilment transition
+ok 6 - only staff may submit an otherwise valid fulfilment transition
+  ---
+  duration_ms: 446.562962
+  type: 'test'
+  ...
+# Subtest: staff fulfilment enforces sequence and rejects stale or terminal updates
+ok 7 - staff fulfilment enforces sequence and rejects stale or terminal updates
+  ---
+  duration_ms: 388.404111
+  type: 'test'
+  ...
+# Subtest: customer cart and mock checkout persist an owned order and clear the cart
+ok 8 - customer cart and mock checkout persist an owned order and clear the cart
+  ---
+  duration_ms: 424.409695
+  type: 'test'
+  ...
+# Subtest: checkout rolls back an inventory change when another line is unavailable
+ok 9 - checkout rolls back an inventory change when another line is unavailable
+  ---
+  duration_ms: 329.822749
+  type: 'test'
+  ...
+# Subtest: login rejection, same-origin form policy, and sign-out preserve access boundaries
+ok 10 - login rejection, same-origin form policy, and sign-out preserve access boundaries
+  ---
+  duration_ms: 370.224002
+  type: 'test'
+  ...
+# Subtest: reset restores seed inventory, order ids, and receipt ownership
+ok 11 - reset restores seed inventory, order ids, and receipt ownership
+  ---
+  duration_ms: 590.783053
+  type: 'test'
+  ...
+# Subtest: only allowlisted assets are served and offline assessment files stay private
+ok 12 - only allowlisted assets are served and offline assessment files stay private
+  ---
+  duration_ms: 242.007492
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4932.399551

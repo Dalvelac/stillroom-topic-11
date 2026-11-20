@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A reproducible local comparison of Burp Suite Community, ZAP and mitmproxy on the Stillroom shop.">
+<title>Source and assertions | Stillroom security study</title><link rel="stylesheet" href="report.css">
+<script src="reflection.js" defer></script><script src="report.js" defer></script></head><body>
+<a class="skip" href="#main">Skip to content</a><header><div class="wrap head"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a><nav aria-label="Main"><a href="index.html">Overview</a><a href="cases.html" class="active" aria-current="location">Case studies</a><a href="comparison.html">Comparison</a><a href="method.html">Method &amp; sources</a><a href="evaluation.html">Evaluation</a><a href="infrastructure/index.html">Infrastructure</a></nav></div></header>
+<main id="main"><section class="pageintro"><div class="wrap"><h1>Source and regression evidence</h1><p class="intro">Line-numbered excerpts from the shop revision used for the recordings. The complete test run is available as TAP output.</p></div></section><section class="band"><div class="wrap"><div class="story"><p><a href="evidence/regression.tap">Full test run</a> · <a href="evidence/shop-source-sha256.txt">Source file hashes</a></p></div></div></section><section id="catalogue" class="band"><div class="wrap"><h2>SQL construction</h2><h3>src/catalogue.mjs · lines 7–22</h3><pre tabindex="0"><code>  7  const sorts = new Map([
+  8    [&#x27;featured&#x27;, { label: &#x27;Featured&#x27;, clause: &#x27;p.id ASC&#x27; }],
+  9    [&#x27;price-asc&#x27;, { label: &#x27;Price, low to high&#x27;, clause: &#x27;p.price_cents ASC, p.id ASC&#x27; }],
+ 10    [&#x27;price-desc&#x27;, { label: &#x27;Price, high to low&#x27;, clause: &#x27;p.price_cents DESC, p.id ASC&#x27; }],
+ 11    [&#x27;name&#x27;, { label: &#x27;Name, A to Z&#x27;, clause: &#x27;p.name COLLATE NOCASE ASC, p.id ASC&#x27; }],
+ 12  ]);
+ 13  
+ 14  export const sortChoices = [...sorts].map(([value, { label }]) =&gt; [value, label]);
+ 15  export const searchLimit = 100;
+ 16  const pageSize = 6;
+ 17  
+ 18  export function searchCatalogue(db, params) {
+ 19    const q = (params.get(&#x27;q&#x27;) ?? &#x27;&#x27;).trim();
+ 20    const category = categories.has(params.get(&#x27;category&#x27;)) ? params.get(&#x27;category&#x27;) : &#x27;&#x27;;
+ 21    const sort = sorts.has(params.get(&#x27;sort&#x27;)) ? params.get(&#x27;sort&#x27;) : &#x27;featured&#x27;;
+ 22  </code></pre><h3>src/catalogue.mjs · lines 31–53</h3><pre tabindex="0"><code> 31    const values = [];
+ 32    if (q) {
+ 33      // Treat the characters that have meaning in LIKE as literal search text.
+ 34      const pattern = &#x27;%&#x27; + q.replace(/[!%_]/g, &#x27;!$&amp;&#x27;) + &#x27;%&#x27;;
+ 35      conditions.push(&quot;(p.name LIKE ? ESCAPE &#x27;!&#x27; OR p.description LIKE ? ESCAPE &#x27;!&#x27;)&quot;);
+ 36      values.push(pattern, pattern);
+ 37    }
+ 38    if (category) {
+ 39      conditions.push(&#x27;p.category = ?&#x27;);
+ 40      values.push(category);
+ 41    }
+ 42  
+ 43    const where = conditions.length ? &#x27; WHERE &#x27; + conditions.join(&#x27; AND &#x27;) : &#x27;&#x27;;
+ 44    const total = db.prepare(&#x27;SELECT count(*) AS count FROM products p&#x27; + where).get(...values).count;
+ 45    const pages = Math.max(1, Math.ceil(total / pageSize));
+ 46    const requested = params.get(&#x27;page&#x27;) ?? &#x27;&#x27;;
+ 47    const page = /^\d{1,6}$/.test(requested) ? Math.max(1, Math.min(Number(requested), pages)) : 1;
+ 48  
+ 49    // Only a complete, predefined ORDER BY expression can enter the statement.
+ 50    const products = db.prepare(
+ 51      &#x27;SELECT p.* FROM products p&#x27; + where + &#x27; ORDER BY &#x27; + sorts.get(sort).clause + &#x27; LIMIT ? OFFSET ?&#x27;,
+ 52    ).all(...values, pageSize, (page - 1) * pageSize);
+ 53  </code></pre></div></section><section id="sql-test" class="band"><div class="wrap"><h2>SQL and catalogue assertions</h2><h3>test/shop.test.mjs · lines 62–107</h3><pre tabindex="0"><code> 62  test(&#x27;catalogue SQL binds literal search text and uses an allowlisted sort expression&#x27;, (t) =&gt; {
+ 63    const db = openDatabase(&#x27;:memory:&#x27;);
+ 64    t.after(() =&gt; db.close());
+ 65    const calls = [];
+ 66    const capture = {
+ 67      prepare(sql) {
+ 68        const statement = db.prepare(sql);
+ 69        return {
+ 70          get(...args) {
+ 71            calls.push({ sql, args });
+ 72            return statement.get(...args);
+ 73          },
+ 74          all(...args) {
+ 75            calls.push({ sql, args });
+ 76            return statement.all(...args);
+ 77          },
+ 78        };
+ 79      },
+ 80    };
+ 81  
+ 82    const query = new URLSearchParams({ q: &quot;Roaster&#x27;s&quot;, category: &#x27;coffee&#x27;, sort: &#x27;price-desc&#x27; });
+ 83    let result = searchCatalogue(capture, query);
+ 84    assert.deepEqual(result.products.map((row) =&gt; row.name), [&quot;Roaster&#x27;s Reserve&quot;]);
+ 85    assert.equal(calls.length, 2);
+ 86    assert(calls.every((call) =&gt; call.sql.includes(&#x27;p.name LIKE ?&#x27;) &amp;&amp; call.sql.includes(&#x27;p.category = ?&#x27;)));
+ 87    assert(calls.every((call) =&gt; !call.sql.includes(&quot;Roaster&#x27;s&quot;)));
+ 88    assert.deepEqual(calls[0].args, [&quot;%Roaster&#x27;s%&quot;, &quot;%Roaster&#x27;s%&quot;, &#x27;coffee&#x27;]);
+ 89    assert.deepEqual(calls[1].args, [&quot;%Roaster&#x27;s%&quot;, &quot;%Roaster&#x27;s%&quot;, &#x27;coffee&#x27;, 6, 0]);
+ 90    assert.match(calls[1].sql, /ORDER BY p\.price_cents DESC, p\.id ASC LIMIT \? OFFSET \?/);
+ 91  
+ 92    const originalStatements = calls.splice(0).map((call) =&gt; call.sql);
+ 93    query.set(&#x27;q&#x27;, &#x27;Daybreak&#x27;);
+ 94    searchCatalogue(capture, query);
+ 95    assert.deepEqual(calls.map((call) =&gt; call.sql), originalStatements);
+ 96  
+ 97    calls.length = 0;
+ 98    query.set(&#x27;sort&#x27;, &#x27;custom ordering&#x27;);
+ 99    result = searchCatalogue(capture, query);
+100    assert.equal(result.sort, &#x27;featured&#x27;);
+101    assert.match(calls[1].sql, /ORDER BY p\.id ASC LIMIT \? OFFSET \?/);
+102    assert(!calls[1].sql.includes(&#x27;custom ordering&#x27;));
+103  
+104    for (const q of [&#x27;%&#x27;, &#x27;_&#x27;, &#x27;!&#x27;]) {
+105      assert.equal(searchCatalogue(db, new URLSearchParams({ q })).total, 0);
+106    }
+107  });</code></pre></div></section><section id="encoding" class="band"><div class="wrap"><h2>HTML output contexts</h2><h3>src/views.mjs · lines 7–12</h3><pre tabindex="0"><code>  7  
+  8  export function escapeHtml(value) {
+  9    return String(value).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, (character) =&gt; entities[character]);
+ 10  }
+ 11  
+ 12  const e = escapeHtml;</code></pre><h3>src/views.mjs · lines 108–120</h3><pre tabindex="0"><code>108    const heading = result.q ? `Results for &lt;span class=&quot;search-term&quot;&gt;${e(result.q)}&lt;/span&gt;` : &#x27;The collection&#x27;;
+109    return layout({ ...context, section: &#x27;catalogue&#x27; }, &#x27;Catalogue&#x27;, `
+110      ${header}
+111      &lt;section class=&quot;collection&quot; id=&quot;collection&quot; aria-labelledby=&quot;collection-heading&quot;&gt;
+112        &lt;div class=&quot;section-heading&quot;&gt;
+113          &lt;h2 id=&quot;collection-heading&quot;&gt;${heading}&lt;/h2&gt;
+114          &lt;p&gt;${result.total} ${result.total === 1 ? &#x27;product&#x27; : &#x27;products&#x27;}&lt;/p&gt;
+115        &lt;/div&gt;
+116        &lt;form class=&quot;filters&quot; action=&quot;/#collection&quot; method=&quot;get&quot;&gt;
+117          &lt;div class=&quot;filter-search&quot;&gt;
+118            &lt;label for=&quot;search&quot;&gt;Search products&lt;/label&gt;
+119            &lt;input id=&quot;search&quot; name=&quot;q&quot; type=&quot;search&quot; maxlength=&quot;${searchLimit}&quot; value=&quot;${e(result.q)}&quot; placeholder=&quot;Coffee, carafe, filters…&quot;&gt;
+120          &lt;/div&gt;</code></pre></div></section><section id="xss-test" class="band"><div class="wrap"><h2>Reflection assertions</h2><h3>test/shop.test.mjs · lines 143–154</h3><pre tabindex="0"><code>143  test(&#x27;search reflection is encoded in HTML text and the quoted value attribute&#x27;, async (t) =&gt; {
+144    const shop = await fixture(t);
+145    const input = &#x27;Morning &lt;sample&gt; &amp; &quot;notes&quot;&#x27;;
+146    const page = await shop.browser().get(&#x27;/?q=&#x27; + encodeURIComponent(input));
+147    assert.equal(page.status, 200);
+148    const safe = &#x27;Morning &amp;lt;sample&amp;gt; &amp;amp; &amp;quot;notes&amp;quot;&#x27;;
+149    assert(page.body.includes(&#x27;&lt;span class=&quot;search-term&quot;&gt;&#x27; + safe + &#x27;&lt;/span&gt;&#x27;));
+150    assert(page.body.includes(&#x27;value=&quot;&#x27; + safe + &#x27;&quot;&#x27;));
+151    assert(!page.body.includes(input));
+152    assert.doesNotMatch(page.body, /&lt;sample&gt;/);
+153    assert.match(page.body, /No products found/);
+154  });</code></pre></div></section><section id="ownership" class="band"><div class="wrap"><h2>Object ownership</h2><h3>src/records.mjs · lines 151–153</h3><pre tabindex="0"><code>151  const orderDetailsSql = &#x27;SELECT o.*, u.email, r.id AS receipt_id FROM orders o &#x27; +
+152    &#x27;JOIN users u ON u.id = o.customer_id &#x27; +
+153    &#x27;LEFT JOIN receipts r ON r.order_id = o.id AND r.customer_id = o.customer_id WHERE o.id = ?&#x27;;</code></pre><h3>src/records.mjs · lines 160–177</h3><pre tabindex="0"><code>160  export function visibleOrder(db, user, orderId) {
+161    const order = user.role === &#x27;staff&#x27;
+162      ? db.prepare(orderDetailsSql).get(orderId)
+163      : db.prepare(orderDetailsSql + &#x27; AND o.customer_id = ?&#x27;).get(orderId, user.id);
+164    if (!order) return undefined;
+165    const events = db.prepare(&#x27;SELECT status, occurred_at FROM order_events WHERE order_id = ? ORDER BY id&#x27;).all(orderId);
+166    return { ...order, items: orderItems(db, orderId), events };
+167  }
+168  
+169  export function ownedReceipt(db, customerId, receiptId) {
+170    const receipt = db.prepare(
+171      &#x27;SELECT r.id, r.order_id, r.issued_at, o.recipient, o.street, o.city, o.postal_code, o.total_cents &#x27; +
+172      &#x27;FROM receipts r JOIN orders o ON o.id = r.order_id AND o.customer_id = r.customer_id &#x27; +
+173      &#x27;WHERE r.id = ? AND r.customer_id = ?&#x27;,
+174    ).get(receiptId, customerId);
+175    if (!receipt) return undefined;
+176    return { ...receipt, items: orderItems(db, receipt.order_id) };
+177  }</code></pre><h3>src/schema.sql · lines 64–70</h3><pre tabindex="0"><code> 64  CREATE TABLE IF NOT EXISTS receipts (
+ 65    id INTEGER PRIMARY KEY,
+ 66    order_id INTEGER NOT NULL UNIQUE,
+ 67    customer_id INTEGER NOT NULL,
+ 68    issued_at TEXT NOT NULL,
+ 69    FOREIGN KEY (order_id, customer_id) REFERENCES orders (id, customer_id) ON DELETE CASCADE
+ 70  ) STRICT;</code></pre><h3>src/http.mjs · lines 238–242</h3><pre tabindex="0"><code>238    [&#x27;GET&#x27;, /^\/orders$/, &#x27;customer&#x27;, showOrders],
+239    [&#x27;GET&#x27;, /^\/orders\/(\d{1,10})$/, &#x27;signed-in&#x27;, showOrder],
+240    [&#x27;GET&#x27;, /^\/receipts\/(\d{1,10})$/, &#x27;customer&#x27;, downloadReceipt],
+241    [&#x27;GET&#x27;, /^\/staff\/orders$/, &#x27;staff&#x27;, showStaffOrders],
+242    [&#x27;POST&#x27;, /^\/staff\/orders\/(\d{1,10})\/status$/, &#x27;staff&#x27;, updateStatus],</code></pre></div></section><section id="ownership-test" class="band"><div class="wrap"><h2>Order and receipt assertions</h2><h3>test/shop.test.mjs · lines 156–225</h3><pre tabindex="0"><code>156  test(&#x27;order detail requires sign-in and ownership or staff access&#x27;, async (t) =&gt; {
+157    const shop = await fixture(t);
+158    const guest = shop.browser();
+159    const alex = shop.browser();
+160    const jamie = shop.browser();
+161    const staff = shop.browser();
+162  
+163    assertRedirect(await guest.get(&#x27;/orders/2101&#x27;), &#x27;/login&#x27;);
+164    await alex.login(&#x27;alex&#x27;);
+165    await jamie.login(&#x27;jamie&#x27;);
+166    assertRedirect(await staff.login(&#x27;staff&#x27;), &#x27;/staff/orders&#x27;);
+167  
+168    const owned = await alex.get(&#x27;/orders/2101&#x27;);
+169    assert.equal(owned.status, 200);
+170    assert.match(owned.body, /14 Demo Lane/);
+171    assert.match(owned.body, /href=&quot;\/receipts\/6101&quot;/);
+172  
+173    const unowned = await jamie.get(&#x27;/orders/2101&#x27;);
+174    const unknown = await jamie.get(&#x27;/orders/9999&#x27;);
+175    assert.equal(unowned.status, 404);
+176    assert.equal(unowned.body, unknown.body);
+177    assert.doesNotMatch(unowned.body, /Alex Rowan|14 Demo Lane|6101/);
+178    assert.match((await jamie.get(&#x27;/orders/2102&#x27;)).body, /8 Sample Court/);
+179  
+180    const staffView = await staff.get(&#x27;/orders/2101&#x27;);
+181    assert.equal(staffView.status, 200);
+182    assert.match(staffView.body, /14 Demo Lane/);
+183    assert.doesNotMatch(staffView.body, /Download receipt/);
+184    const aOrders = await alex.get(&#x27;/orders&#x27;);
+185    const jOrders = await jamie.get(&#x27;/orders&#x27;);
+186    assert.match(aOrders.body, /\/orders\/2101/);
+187    assert.doesNotMatch(aOrders.body, /\/orders\/2102/);
+188    assert.match(jOrders.body, /\/orders\/2102/);
+189    assert.doesNotMatch(jOrders.body, /\/orders\/2101/);
+190  });
+191  
+192  test(&#x27;receipts authorize their own resource for guest, owner, peer, and staff&#x27;, async (t) =&gt; {
+193    const shop = await fixture(t);
+194    const guest = shop.browser();
+195    const alex = shop.browser();
+196    const jamie = shop.browser();
+197    const staff = shop.browser();
+198  
+199    assertRedirect(await guest.get(&#x27;/receipts/6101&#x27;), &#x27;/login&#x27;);
+200    await alex.login(&#x27;alex&#x27;);
+201    await jamie.login(&#x27;jamie&#x27;);
+202    await staff.login(&#x27;staff&#x27;);
+203  
+204    const owned = await alex.get(&#x27;/receipts/6101&#x27;);
+205    assert.equal(owned.status, 200);
+206    assert.equal(owned.headers.get(&#x27;content-disposition&#x27;), &#x27;attachment; filename=&quot;stillroom-receipt-6101.html&quot;&#x27;);
+207    assert.match(owned.headers.get(&#x27;cache-control&#x27;), /\bno-store\b/);
+208    assert.match(owned.body, /Receipt R-6101/);
+209    assert.match(owned.body, /Order SR-2101/);
+210    assert.match(owned.body, /14 Demo Lane/);
+211  
+212    const peer = await jamie.get(&#x27;/receipts/6101&#x27;);
+213    assert.equal(peer.status, 404);
+214    assert.equal(peer.headers.get(&#x27;content-disposition&#x27;), null);
+215    assert.equal(peer.body, (await jamie.get(&#x27;/receipts/9999&#x27;)).body);
+216    assert.doesNotMatch(peer.body, /Alex Rowan|14 Demo Lane/);
+217    assert.match((await jamie.get(&#x27;/receipts/6102&#x27;)).body, /Order SR-2102/);
+218  
+219    const denied = await staff.get(&#x27;/receipts/6101&#x27;);
+220    assert.equal(denied.status, 403);
+221    assert.equal(denied.headers.get(&#x27;content-disposition&#x27;), null);
+222    assert.doesNotMatch(denied.body, /14 Demo Lane/);
+223  
+224    assert.throws(() =&gt; shop.db.prepare(&#x27;UPDATE receipts SET customer_id = ? WHERE id = ?&#x27;).run(2, 6101), /FOREIGN KEY/);
+225  });</code></pre></div></section><section id="fulfilment" class="band"><div class="wrap"><h2>Role and transition rules</h2><h3>src/http.mjs · lines 241–243</h3><pre tabindex="0"><code>241    [&#x27;GET&#x27;, /^\/staff\/orders$/, &#x27;staff&#x27;, showStaffOrders],
+242    [&#x27;POST&#x27;, /^\/staff\/orders\/(\d{1,10})\/status$/, &#x27;staff&#x27;, updateStatus],
+243  ];</code></pre><h3>src/http.mjs · lines 280–288</h3><pre tabindex="0"><code>280    const [, pattern, access, handler] = route;
+281    if (access !== &#x27;public&#x27;) {
+282      if (!ctx.user) return redirect(ctx, &#x27;/login&#x27;);
+283      if (access !== &#x27;signed-in&#x27; &amp;&amp; ctx.user.role !== access) return denied(ctx);
+284    }
+285    if (method === &#x27;POST&#x27; &amp;&amp; req.headers.origin !== origin) {
+286      return render(ctx, 403, views.messagePage, &#x27;Request declined&#x27;, &#x27;Return to the shop and submit the form again.&#x27;);
+287    }
+288    await handler(ctx, ...pattern.exec(path).slice(1));</code></pre><h3>src/records.mjs · lines 90–98</h3><pre tabindex="0"><code> 90  export const orderSteps = [&#x27;placed&#x27;, &#x27;processing&#x27;, &#x27;shipped&#x27;, &#x27;delivered&#x27;];
+ 91  export const statusLabels = {
+ 92    placed: &#x27;Placed&#x27;, processing: &#x27;Processing&#x27;, shipped: &#x27;Shipped&#x27;, delivered: &#x27;Delivered&#x27;,
+ 93  };
+ 94  
+ 95  export function nextStatus(status) {
+ 96    const position = orderSteps.indexOf(status);
+ 97    return position &lt; 0 ? undefined : orderSteps[position + 1];
+ 98  }</code></pre><h3>src/records.mjs · lines 179–191</h3><pre tabindex="0"><code>179  export function changeOrderStatus(db, orderId, requested, staffId) {
+180    transaction(db, () =&gt; {
+181      const order = db.prepare(&#x27;SELECT status FROM orders WHERE id = ?&#x27;).get(orderId);
+182      if (!order) throw new StoreError(404, &#x27;This order could not be found.&#x27;);
+183      const next = nextStatus(order.status);
+184      if (!next || requested !== next) {
+185        throw new StoreError(409, &#x27;That status change is unavailable. Reopen the order to see the next step.&#x27;);
+186      }
+187      db.prepare(&#x27;UPDATE orders SET status = ? WHERE id = ?&#x27;).run(next, orderId);
+188      db.prepare(&#x27;INSERT INTO order_events (order_id, status, actor_id, occurred_at) VALUES (?, ?, ?, ?)&#x27;)
+189        .run(orderId, next, staffId, new Date().toISOString());
+190    });
+191  }</code></pre></div></section><section id="fulfilment-test" class="band"><div class="wrap"><h2>Permission and transition assertions</h2><h3>test/shop.test.mjs · lines 227–273</h3><pre tabindex="0"><code>227  test(&#x27;only staff may submit an otherwise valid fulfilment transition&#x27;, async (t) =&gt; {
+228    const shop = await fixture(t);
+229    const guest = shop.browser();
+230    const owner = shop.browser();
+231    const staff = shop.browser();
+232    const path = &#x27;/staff/orders/2102/status&#x27;;
+233    const next = { status: &#x27;processing&#x27; };
+234    assertRedirect(await guest.post(path, next), &#x27;/login&#x27;);
+235  
+236    await owner.login(&#x27;jamie&#x27;);
+237    assert.equal((await owner.get(&#x27;/staff/orders&#x27;)).status, 403);
+238    const response = await owner.post(path, next);
+239    assert.equal(response.status, 403);
+240    assert.match(response.body, /Access denied/);
+241  
+242    assert.equal(shop.db.prepare(&#x27;SELECT status FROM orders WHERE id = 2102&#x27;).get().status, &#x27;placed&#x27;);
+243    await staff.login(&#x27;staff&#x27;);
+244    assertRedirect(await staff.post(path, next), &#x27;/orders/2102&#x27;);
+245    assert.match((await owner.get(&#x27;/orders/2102&#x27;)).body, /badge-processing/);
+246  });
+247  
+248  test(&#x27;staff fulfilment enforces sequence and rejects stale or terminal updates&#x27;, async (t) =&gt; {
+249    const shop = await fixture(t);
+250    const staff = shop.browser();
+251    const owner = shop.browser();
+252    await staff.login(&#x27;staff&#x27;);
+253    await owner.login(&#x27;jamie&#x27;);
+254    const path = &#x27;/staff/orders/2102/status&#x27;;
+255  
+256    const skipped = await staff.post(path, { status: &#x27;shipped&#x27; });
+257    assert.equal(skipped.status, 409);
+258    assert.match(skipped.body, /badge-placed/);
+259    assert.match(skipped.body, /That status change is unavailable/);
+260    assert.equal(shop.db.prepare(&#x27;SELECT count(*) AS count FROM order_events WHERE order_id = 2102&#x27;).get().count, 1);
+261  
+262    assertRedirect(await staff.post(path, { status: &#x27;processing&#x27; }), &#x27;/orders/2102&#x27;);
+263    assert.equal((await staff.post(path, { status: &#x27;processing&#x27; })).status, 409);
+264    assert.equal((await staff.post(path, { status: &#x27;placed&#x27; })).status, 409);
+265    assertRedirect(await staff.post(path, { status: &#x27;shipped&#x27; }), &#x27;/orders/2102&#x27;);
+266    assertRedirect(await staff.post(path, { status: &#x27;delivered&#x27; }), &#x27;/orders/2102&#x27;);
+267    assert.equal((await staff.post(path, { status: &#x27;delivered&#x27; })).status, 409);
+268    assert.match((await owner.get(&#x27;/orders/2102&#x27;)).body, /badge-delivered/);
+269    assert.deepEqual(
+270      shop.db.prepare(&#x27;SELECT status FROM order_events WHERE order_id = 2102 ORDER BY id&#x27;).all().map((row) =&gt; row.status),
+271      [&#x27;placed&#x27;, &#x27;processing&#x27;, &#x27;shipped&#x27;, &#x27;delivered&#x27;],
+272    );
+273  });</code></pre></div></section><section id="origin" class="band"><div class="wrap"><h2>Form origin checks</h2><h3>src/http.mjs · lines 281–288</h3><pre tabindex="0"><code>281    if (access !== &#x27;public&#x27;) {
+282      if (!ctx.user) return redirect(ctx, &#x27;/login&#x27;);
+283      if (access !== &#x27;signed-in&#x27; &amp;&amp; ctx.user.role !== access) return denied(ctx);
+284    }
+285    if (method === &#x27;POST&#x27; &amp;&amp; req.headers.origin !== origin) {
+286      return render(ctx, 403, views.messagePage, &#x27;Request declined&#x27;, &#x27;Return to the shop and submit the form again.&#x27;);
+287    }
+288    await handler(ctx, ...pattern.exec(path).slice(1));</code></pre><h3>test/shop.test.mjs · lines 349–356</h3><pre tabindex="0"><code>349  
+350    const externalOrigin = { Origin: &#x27;http://example.test&#x27; };
+351    assert.equal((await customer.post(&#x27;/login&#x27;, DEMO_ACCOUNTS.alex, externalOrigin)).status, 403);
+352    await customer.login(&#x27;alex&#x27;);
+353    assert.equal((await customer.post(&#x27;/logout&#x27;, {}, externalOrigin)).status, 403);
+354    assert.equal((await customer.get(&#x27;/orders&#x27;)).status, 200);
+355  
+356    const signout = await customer.post(&#x27;/logout&#x27;, {});</code></pre></div></section></main><footer><div class="wrap"><span>VŠB–TUO · Fundamentals of the Security in Communications</span><a href="method.html#references">Sources and attribution</a></div></footer></body></html>
