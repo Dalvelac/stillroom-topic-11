@@ -1,3 +1,7 @@
+// Keep bookmarks to the original web film working from the presentation overview.
+if (document.getElementById("film-guide") && location.hash === "#film") {
+  location.replace("web.html#film");
+}
 const player = document.querySelector("video");
 for (const button of document.querySelectorAll("[data-seek]")) {
   button.addEventListener("click", () => {

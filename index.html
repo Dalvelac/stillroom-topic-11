@@ -1,15 +1,37 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A reproducible local comparison of Burp Suite Community, ZAP and mitmproxy on the Stillroom shop.">
-<title>Comparing web security tools | Stillroom security study</title><link rel="stylesheet" href="report.css">
+<meta name="description" content="Recorded web application and infrastructure investigations of the Stillroom shop for Topic 11.">
+<title>Comparing security testing tools | Stillroom security study</title><link rel="stylesheet" href="report.css"><link rel="stylesheet" href="navigation.css">
 <script src="reflection.js" defer></script><script src="report.js" defer></script></head><body>
-<a class="skip" href="#main">Skip to content</a><header><div class="wrap head"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a><nav aria-label="Main"><a href="index.html" class="active" aria-current="page">Overview</a><a href="cases.html">Case studies</a><a href="comparison.html">Comparison</a><a href="method.html">Method &amp; sources</a><a href="evaluation.html">Evaluation</a><a href="infrastructure/index.html">Infrastructure</a></nav></div></header>
-<main id="main"><section class="homehero"><div class="wrap homegrid"><div>
-<p class="kicker">VŠB–TUO · Topic 11</p><h1>Comparing web security tools</h1>
-<p class="intro">What can an HTTP proxy establish about a shop’s security? Follow one Stillroom order through Burp Suite, ZAP and mitmproxy, from catalogue search to fulfilment.</p>
-<div class="actions"><a class="btn" href="#film">Watch the walkthrough</a><a class="plain" href="comparison.html">Compare the tools</a></div></div>
-<figure class="board"><a href="evidence/storefront.png" aria-label="Open the full catalogue screenshot"><img src="evidence/storefront.png" alt="Stillroom’s live catalogue with a ceramic dripper, search field and category filters"></a>
-<figcaption><span>The Stillroom testbed</span><span>Local browser capture</span></figcaption></figure></div></section><section id="film" class="band wrap"><div class="sectionhead"><h2>The recorded walkthrough</h2><a href="evidence/walkthrough.mp4" download>Download MP4</a></div>
-<div class="video-layout"><video id="walkthrough" controls playsinline preload="metadata" poster="evidence/walkthrough-poster.jpg" aria-label="Captioned 50-second walkthrough of the three tools and fulfilment regressions"><source src="evidence/walkthrough.mp4" type="video/mp4">Open the MP4 download to watch.</video>
-<div><h3>Chapters</h3><ol class="chapters"><li><button type="button" data-seek="0.0"><time>0:00</time>Catalogue search</button></li><li><button type="button" data-seek="8.533"><time>0:08</time>Burp HTTP history</button></li><li><button type="button" data-seek="16.067"><time>0:16</time>Checkout and receipt</button></li><li><button type="button" data-seek="24.6"><time>0:24</time>Triage a passive alert</button></li><li><button type="button" data-seek="30.133"><time>0:30</time>Staff updates the order</button></li><li><button type="button" data-seek="36.667"><time>0:36</time>Read the saved flows</button></li><li><button type="button" data-seek="43.2"><time>0:43</time>Verify the fulfilment rules</button></li></ol><p class="small">50 seconds. Captions are included in the picture.</p></div></div>
-<details><summary>Read the transcript</summary><ol><li><strong>Catalogue search</strong>. An apostrophe matches one coffee. The second search displays angle brackets as text.</li><li><strong>Burp HTTP history</strong>. The raw response contains two encoded matches, in the heading and in the search field.</li><li><strong>Checkout and receipt</strong>. Alex places a €48 simulated order and opens the receipt download.</li><li><strong>Triage a passive alert</strong>. The potential XSS alert on q is informational and carries low confidence.</li><li><strong>Staff updates the order</strong>. Staff opens SR-2105 and advances the order from Placed to Processing.</li><li><strong>Read the saved flows</strong>. The saved flow shows a 303 from the status change, followed by a 200 on order detail.</li><li><strong>Verify the fulfilment rules</strong>. Separate tests check staff permission and the sequence of allowed transitions.</li></ol></details></section><section class="band tint"><div class="wrap"><div class="sectionhead"><h2>Four questions about the shop</h2><a href="cases.html">Case studies</a></div><div class="gridcase"><a class="casecard" href="catalogue.html"><img src="evidence/catalogue-search.png" alt="" loading="lazy"><div><h3>Catalogue search</h3><p>Follow an apostrophe from the search box to a bound SQLite parameter.</p></div></a><a class="casecard" href="reflection.html"><img src="evidence/zap-alert.png" alt="" loading="lazy"><div><h3>Reflected search text</h3><p>Compare a real ZAP alert with the response bytes and the browser’s DOM.</p></div></a><a class="casecard" href="ownership.html"><img src="evidence/second-customer.png" alt="" loading="lazy"><div><h3>Order and receipt ownership</h3><p>Check two resources against four identities with separate ownership rules.</p></div></a><a class="casecard" href="fulfilment.html"><img src="evidence/owner-after.png" alt="" loading="lazy"><div><h3>Fulfilment permissions</h3><p>Test who can make a change and which transition can be committed.</p></div></a></div></div></section><section class="band"><div class="wrap"><div class="story"><h2>What the runs established</h2><p>Each tool recorded the same 40 application exchanges. ZAP identified a potentially unsafe reflection that the raw HTML and browser DOM resolved. Database binding, object ownership and rejected status changes needed source or regression evidence. All twelve application tests passed.</p><p><a href="comparison.html">Measured performance and tool differences</a> · <a href="evaluation.html">Conclusion and student reflection</a></p></div></div></section><section class="band"><div class="wrap"><div class="story"><h2>Infrastructure investigation</h2><p>Follow the retirement of Stillroom’s FTP dispatch share through Nmap, Metasploit and Wireshark. The second film ends with a hardened retest and an offline dependency exercise.</p><p><a class="btn" href="infrastructure/index.html">Open the infrastructure study</a></p></div></div></section></main><footer><div class="wrap"><span>VŠB–TUO · Fundamentals of the Security in Communications</span><a href="method.html#references">Sources and attribution</a></div></footer></body></html>
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="site-bar">
+      <a class="site-brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a>
+      <nav class="site-links" aria-label="Main"><a href="index.html" aria-current="page">Overview</a><a href="web.html">Web application</a><a href="infrastructure/index.html">Infrastructure</a><a href="evaluation.html">Evaluation</a></nav>
+    </div></header>
+<main id="main"><section class="film-guide" id="film-guide" aria-labelledby="guide-title"><div class="wrap">
+  <p class="kicker">VŠB–TUO · Topic 11</p>
+  <h1 id="guide-title">Comparing security testing tools</h1>
+  <p class="guide-intro">The 50-second web film follows a customer order through three HTTP tools. The 2-minute infrastructure film follows the same shop’s FTP file share from discovery to retirement.</p>
+  <div class="film-pair">
+    <article class="film-choice" id="film" aria-labelledby="web-choice">
+      <a class="film-image web-image" href="web.html#film" aria-label="Watch the web application film, 50 seconds"><img src="evidence/storefront.png" alt=""></a>
+      <div class="choice-copy"><p class="film-label">Web application <span>0:50</span></p>
+        <h2 id="web-choice">Follow a shop order</h2>
+        <p>Burp Suite, ZAP and mitmproxy capture the same customer journey. See how a search alert is checked against the HTTP response.</p>
+        <div class="choice-actions"><a class="btn" href="web.html#film">Watch web film</a><a href="cases.html">Explore the cases</a></div>
+      </div>
+    </article>
+    <article class="film-choice" aria-labelledby="infra-choice">
+      <a class="film-image infra-image" href="infrastructure/index.html#film" aria-label="Watch the infrastructure film, 2 minutes 4 seconds"><img src="dispatch-preview.jpg" alt=""></a>
+      <div class="choice-copy"><p class="film-label">Infrastructure <span>2:04</span></p>
+        <h2 id="infra-choice">Retire the dispatch share</h2>
+        <p>Nmap, Metasploit and Wireshark follow a legacy FTP service from discovery to file transfer. The retest checks that FTP closed and the shop still responds.</p>
+        <div class="choice-actions"><a class="btn" href="infrastructure/index.html#film">Watch infrastructure film</a><a href="infrastructure/index.html#evidence">Inspect the evidence</a></div>
+      </div>
+    </article>
+  </div>
+</div></section>
+<section class="wrap end-guide" aria-labelledby="guide-evaluation"><div><h2 id="guide-evaluation">What each investigation established</h2>
+<p>Compare the tools’ evidence, then read the student’s choice and the search response that shaped it.</p></div>
+<nav aria-label="Results"><a href="comparison.html">Web tool comparison</a><a href="infrastructure/index.html#comparison">Infrastructure tool comparison</a><a href="evaluation.html">Read the evaluation</a></nav>
+</section>
+</main><footer><div class="wrap"><span>VŠB–TUO · Fundamentals of the Security in Communications</span><a href="method.html#references">Sources and attribution</a></div></footer></body></html>

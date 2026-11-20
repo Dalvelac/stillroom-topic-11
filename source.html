@@ -1,9 +1,12 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="A reproducible local comparison of Burp Suite Community, ZAP and mitmproxy on the Stillroom shop.">
-<title>Source and assertions | Stillroom security study</title><link rel="stylesheet" href="report.css">
+<meta name="description" content="Recorded web application and infrastructure investigations of the Stillroom shop for Topic 11.">
+<title>Source and assertions | Stillroom security study</title><link rel="stylesheet" href="report.css"><link rel="stylesheet" href="navigation.css">
 <script src="reflection.js" defer></script><script src="report.js" defer></script></head><body>
-<a class="skip" href="#main">Skip to content</a><header><div class="wrap head"><a class="brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a><nav aria-label="Main"><a href="index.html">Overview</a><a href="cases.html" class="active" aria-current="location">Case studies</a><a href="comparison.html">Comparison</a><a href="method.html">Method &amp; sources</a><a href="evaluation.html">Evaluation</a><a href="infrastructure/index.html">Infrastructure</a></nav></div></header>
+<a class="skip" href="#main">Skip to content</a><header class="site-header"><div class="site-bar">
+      <a class="site-brand" href="index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a>
+      <nav class="site-links" aria-label="Main"><a href="index.html">Overview</a><a href="web.html" aria-current="location">Web application</a><a href="infrastructure/index.html">Infrastructure</a><a href="evaluation.html">Evaluation</a></nav>
+    </div></header><nav class="study-links" aria-label="Web application sections"><div><a href="web.html#film">Film · 0:50</a><a href="cases.html" aria-current="location">Case studies</a><a href="comparison.html">Tool comparison</a><a href="method.html">Method &amp; sources</a></div></nav>
 <main id="main"><section class="pageintro"><div class="wrap"><h1>Source and regression evidence</h1><p class="intro">Line-numbered excerpts from the shop revision used for the recordings. The complete test run is available as TAP output.</p></div></section><section class="band"><div class="wrap"><div class="story"><p><a href="evidence/regression.tap">Full test run</a> · <a href="evidence/shop-source-sha256.txt">Source file hashes</a></p></div></div></section><section id="catalogue" class="band"><div class="wrap"><h2>SQL construction</h2><h3>src/catalogue.mjs · lines 7–22</h3><pre tabindex="0"><code>  7  const sorts = new Map([
   8    [&#x27;featured&#x27;, { label: &#x27;Featured&#x27;, clause: &#x27;p.id ASC&#x27; }],
   9    [&#x27;price-asc&#x27;, { label: &#x27;Price, low to high&#x27;, clause: &#x27;p.price_cents ASC, p.id ASC&#x27; }],
