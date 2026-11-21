@@ -13,7 +13,7 @@
 <header class="site-header"><div class="site-bar">
       <a class="site-brand" href="../index.html"><span class="mark" aria-hidden="true"></span>Stillroom security study</a>
       <nav class="site-links" aria-label="Main"><a href="../index.html">Overview</a><a href="../web.html">Web application</a><a href="../infrastructure/index.html" aria-current="page">Infrastructure</a><a href="../evaluation.html">Evaluation</a></nav>
-    </div></header><nav class="study-links" aria-label="Infrastructure sections"><div><a href="#film">Film · 1:47</a><a href="#evidence">Tool evidence</a><a href="#comparison">Tool comparison</a><a href="#cve">CVE exercise</a></div></nav>
+    </div></header><nav class="study-links" aria-label="Infrastructure sections"><div><a href="#film">Film · 1:47</a><a href="#evidence">Tool evidence</a><a href="#comparison">Tool comparison</a><a href="#cve">CVE exercise</a><a href="#repeat-lab">Run the lab</a></div></nav>
 <main id="main">
 <section class="hero" aria-labelledby="title"><div class="wrap hero-grid">
   <div class="lead">
@@ -35,7 +35,8 @@
 
 <section class="wrap film band" id="film" aria-labelledby="film-title">
   <div class="section-head"><h2 id="film-title">Retire the dispatch share · 1:47</h2><a href="investigation.mp4" download>Download film <span class="ext">MP4</span></a></div>
-  <p class="film-context">Trace the FTP service through discovery, file transfer and removal. The final chapter compares two fictional software inventories.</p><div class="cinema">
+  <p class="film-context">Original screenshots and a Wireshark excerpt accompany a later terminal review of the saved evidence. Visible typing was retimed to 95 words per minute. The <a href="#evidence">scan, inventory and packet records</a> support the findings.</p>
+  <div class="cinema">
     <video id="player" controls playsinline preload="metadata" poster="film-poster.jpg" width="1440" height="810" aria-label="Retiring the dispatch share, captioned investigation"><source src="investigation.mp4" type='video/mp4; codecs="avc1.f40020"'><source src="investigation-compat.mp4" type="video/mp4"><a href="investigation.mp4">Open the investigation film</a></video>
     <div class="chapters"><div class="chap-head"><h3>Chapters</h3><span id="runtime">1:47</span></div>
       <ol id="chapter-list">
@@ -110,5 +111,5 @@
   <div class="documents"><h3>Exercise materials</h3><a href="cve/inventory-before.json">Before inventory <small>JSON</small></a><a href="cve/inventory-after.json">After inventory <small>JSON</small></a><a href="cve/ADVISORY-NOTE.md">Offline advisory note <small>MD</small></a><a href="https://logging.apache.org/security.html#CVE-2021-44228">Apache advisory <small>Web</small></a><details><summary>Check your answer</summary><p><a href="cve/REVIEWER-KEY.md">Reviewer key</a> · <a href="cve-triage.png">Recorded comparison</a></p></details></div>
 </section>
 </main>
-<footer><div class="wrap foot"><div><strong>Student evaluation</strong><p>The reflected-search case shaped the student’s choice of tool.</p></div><a href="../evaluation.html#student-opinion">Read the evaluation</a><a href="run-guide.txt">Run instructions</a></div></footer>
+<footer id="repeat-lab"><div class="wrap foot"><div><strong>Repeat the investigation</strong><p>The run guide covers the isolated Linux lab, the baseline transfer and the hardened retest.</p></div><a href="Stillroom-Topic-11-infrastructure.zip" download>Download lab ZIP</a><a href="run-guide.txt">Run instructions</a></div></footer>
 </body></html>

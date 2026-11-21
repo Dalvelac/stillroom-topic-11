@@ -8,4 +8,6 @@ Recorded investigations for VŠB–TUO Fundamentals of the Security in Communica
 - [Retire the dispatch share · 1:47](https://dalvelac.github.io/stillroom-topic-11/infrastructure/#film) follows the retired FTP share through Nmap, Metasploit, Wireshark and a hardened retest.
 - [Student evaluation](https://dalvelac.github.io/stillroom-topic-11/evaluation.html#student-opinion) links the preferred tool to a specific response in the recorded evidence.
 
+To repeat the isolated Linux investigation, extract the [lab ZIP](https://dalvelac.github.io/stillroom-topic-11/infrastructure/Stillroom-Topic-11-infrastructure.zip) and follow the [startup and retest instructions](https://dalvelac.github.io/stillroom-topic-11/infrastructure/run-guide.txt).
+
 This repository serves the static presentation, recordings and supporting evidence. The assessed services run on an isolated local lab.

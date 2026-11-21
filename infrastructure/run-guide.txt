@@ -1,17 +1,26 @@
 Optional infrastructure investigation
 
-The legacy dispatch share represents a file drop the shop has retired. Baseline runs the real shop and a read-only FTP service. Hardened runs the same shop with FTP disabled. Both use the same lab host name, ports, sample and web state. The completed [recording and evidence](infra/recording/index.html) open offline. **Add your own opinion and contribution to the Topic 11 showcase before submission.**
+The legacy dispatch share represents a file drop the shop has retired. Baseline runs the real shop and a read-only FTP service. Hardened runs the same shop with FTP disabled. Both use the same lab host name, ports, sample and web state. The completed [recording and evidence](infra/recording/index.html) open offline.
 
 ### Start, switch, reset and stop
 
-Use a Linux machine with unprivileged user/network/mount/PID namespaces, Bash, util-linux (`unshare`, `mount`, `flock`), iproute2, curl, Node 24+, and Python 3 with venv and pip. First-time setup needs internet access to install the pinned FTP package in `infra/.venv`. The investigation itself runs locally. For the evidence steps use Nmap, Metasploit Framework with a working PostgreSQL connection, and Wireshark with dumpcap and TShark. On this workstation, enable the prepared private copies in **each host terminal** before starting. On another Linux machine, use those tools from its package manager or vendor installation. [pyftpdlib](https://github.com/giampaolo/pyftpdlib) · [Metasploit database support](https://docs.metasploit.com/docs/using-metasploit/intermediate/metasploit-database-support.html)
+Download **Stillroom-Topic-11-infrastructure.zip** using **Download lab ZIP** on the presentation’s Infrastructure page. The archive contains the shop source, isolated launcher, sample file, recorded evidence and offline CVE exercise. Open a terminal in the folder containing the download and extract it into a new directory:
 
 ```sh
-# This workstation. Run from topic11-stillroom.
-export PATH="$HOME/.cache/stillroom-topic11/bin:$PATH"
+unzip Stillroom-Topic-11-infrastructure.zip -d stillroom-lab
+cd stillroom-lab/topic11-stillroom
+```
+
+If you already extracted the archive, open a terminal in its `topic11-stillroom` directory. All file references below are relative to that directory unless the step specifies a different working directory. If an extractor discarded file permissions, restore the launcher with `chmod +x infra/lab`.
+
+Use Linux with unprivileged user, network, mount and PID namespaces, Bash, util-linux (unshare, mount, flock), iproute2, curl, Node.js 24 or later, Python 3 with venv and pip, and ordinary shell utilities. First-time setup needs internet access for the pinned FTP package. The investigation runs locally. To collect new tool evidence, also install Nmap, Metasploit Framework with local PostgreSQL, and Wireshark with dumpcap and TShark. Verify these executables are available in the terminals you use. [pyftpdlib](https://github.com/giampaolo/pyftpdlib) · [Metasploit database support](https://docs.metasploit.com/docs/using-metasploit/intermediate/metasploit-database-support.html)
+
+```sh
 ./infra/lab setup
 ./infra/lab baseline
 ```
+
+On the original recording workstation, the evidence tools are installed under `$HOME/.cache/stillroom-topic11/bin`. If using that installation, prepend it to `PATH` in each host terminal. Its Metasploit wrapper manages the local database. Other Linux installations can use the tools already on their `PATH`.
 
 The launcher opens a shell at `stillroom[baseline]$` inside a fresh namespace. Its only network link is `lo`. A private hosts file maps **stillroom.test** to **127.0.0.1**. Run the client steps in this shell. The normal shop starts through its existing `server.mjs`. A private mount maps the lab web database to `infra/.state/shop/`, separate from the everyday shop’s `data/`. You can run the everyday shop on the host at the same time. FTP binds to loopback inside the namespace. There is no bridge, published port or route to the LAN. Linux namespace support is required for this launcher.
 
@@ -35,10 +44,9 @@ This is one host, two TCP ports and a light service identification pass. The sca
 
 ### 2. Metasploit inventory
 
-Open a **second host terminal** in the shop directory. Start Metasploit from the directory that contains your XML. On this workstation the prepared wrapper starts and stops its private Unix-socket PostgreSQL server with the console. With a regular Framework installation, start its local PostgreSQL database according to your distribution and check `db_status`.
+Open a **second host terminal** in the shop directory. Start Metasploit from the directory that contains your XML. Start the local PostgreSQL database for your Framework installation and check its connection with `db_status` in the console.
 
 ```sh
-export PATH="$HOME/.cache/stillroom-topic11/bin:$PATH"
 cd infra/runs/my-run-01
 sha256sum baseline.xml
 msfconsole
@@ -67,7 +75,7 @@ Compare the address and service records with the original XML. The note is your 
 Return to the **baseline lab shell** in your run directory. The synthetic account is `dispatch`; its lab-default password is **`Stillroom-Demo-Only`**. It can list and retrieve the one file. The FTP account has no corresponding shop login. The following capture covers only this fixture’s control connection. The data connection uses a separate port.
 
 ```sh
-dumpcap -q -i lo -f 'tcp port 21' -w control-private.pcapng >capture.log 2>&1 &
+dumpcap -i lo -f 'tcp port 21' -w control-private.pcapng >capture.log 2>&1 &
 cap=$!
 # Wait for capture.log to name the output file before continuing.
 cat capture.log
@@ -122,6 +130,3 @@ Open the [blank worksheet](infra/cve/WORKSHEET.md), [first inventory](infra/cve/
 | FTP client and Wireshark | Redacted exchange plus matching download digest | What establishes a successful login, and what separately establishes plaintext transport? |
 | Hardened XML and web check | Both port states beside HTTP status and catalogue title | Was FTP removed while the web workflow stayed available? |
 | CVE inventories and worksheet | Matching core artifact in both builds beside Apache’s interval | Which dependency claim can you support, and what runtime evidence is missing? |
-
-**Before submitting**, add your own opinion to the finished site's **Evaluation** page. Explain which tool changed your interpretation of one observation, and which work you personally repeated.
-
